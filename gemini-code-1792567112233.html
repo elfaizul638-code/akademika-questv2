@@ -1,0 +1,1468 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+    <title>Akademika Quest: Game Interaktif Menulis Akademik</title>
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com/3.4.17"></script>
+    <!-- FontAwesome Icons -->
+    
+    <!-- Canvas Confetti -->
+    <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
+    <style>html{font-size:112.5%}html.light{filter:invert(1) hue-rotate(180deg)}html.light canvas{filter:invert(1) hue-rotate(180deg)}</style>
+<style>#tab-ai{--bg:#0f172a;--card:#1e293b;--text:#e2e8f0;--muted:#94a3b8;--accent:#818cf8;--accent-t:#0f172a;--border:#334155;--ok:#34d399;--bad:#fb7185;--mark:#854d0e;color:var(--text)}#tab-ai .aitabs{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:14px}#tab-ai .aitabs button,#tab-ai .btn{border:1px solid var(--border);background:var(--card);color:var(--text);padding:8px 12px;border-radius:10px;font:inherit;cursor:pointer}#tab-ai .aitabs button.on,#tab-ai .btn.pri{background:var(--accent);color:var(--accent-t);border-color:var(--accent);font-weight:600}#tab-ai .card{background:var(--card);border:1px solid var(--border);border-radius:14px;padding:14px;margin-bottom:12px}#tab-ai label{display:block;font-weight:600;font-size:.88rem;margin:8px 0 4px}#tab-ai textarea,#tab-ai select{width:100%;background:var(--bg);color:var(--text);border:1px solid var(--border);border-radius:10px;padding:10px;font:inherit}#tab-ai textarea{min-height:110px;resize:vertical}#tab-ai .row{display:flex;gap:8px;flex-wrap:wrap;align-items:center;margin-top:10px}#tab-ai .note{color:var(--muted);font-size:.82rem}#tab-ai .out{margin-top:12px}#tab-ai .item{border-left:3px solid var(--accent);padding:4px 10px;margin:8px 0}#tab-ai .item b{display:block}#tab-ai .ok{color:var(--ok)}#tab-ai .bad{color:var(--bad)}#tab-ai .score{font-size:1.6rem;font-weight:700}#tab-ai mark{background:var(--mark);color:inherit;border-radius:3px;padding:0 1px}#tab-ai .opt{margin:2px 0 2px 14px}#tab-ai .hide{display:none}#tab-ai .wide{overflow-x:auto}
+@media print{html.light{filter:none}body>*:not(#print-area){display:none!important}#print-area{display:block!important;color:#000;background:#fff;padding:16px}}
+#print-area{display:none}.projx{display:none}html.proj{font-size:170%}html.proj header,html.proj #leaderboard-container{display:none}html.proj .projx{display:block;position:fixed;top:8px;right:8px;z-index:60}
+#toast{position:fixed;left:50%;bottom:20px;transform:translateX(-50%);z-index:70;max-width:90%}</style>
+</head>
+<body class="bg-slate-900 text-slate-100 min-h-screen flex flex-col font-sans">
+
+    <!-- Header / Navbar -->
+    <header class="bg-slate-800 border-b border-slate-700 p-4 sticky top-0 z-50 shadow-md">
+        <div class="max-w-6xl mx-auto flex flex-col md:flex-row justify-between items-center gap-4">
+            <div class="flex items-center space-x-3">
+                <div class="bg-indigo-600 p-2 rounded-lg text-white">
+                    <span class="text-2xl">🎓</span>
+                </div>
+                <div>
+                    <h1 class="font-bold text-xl text-indigo-400">Akademika Quest</h1>
+                    <p class="text-xs text-slate-400">Media Pembelajaran Interaktif Menulis Akademik</p>
+                </div>
+            </div>
+            <div class="flex gap-2">
+                <button onclick="toggleTheme()" id="theme-btn" class="px-3 py-2 rounded-lg text-sm bg-slate-700 hover:bg-slate-600 text-slate-200"> Tema Terang</button>
+                <button onclick="exportScores()" class="px-3 py-2 rounded-lg text-sm bg-slate-700 hover:bg-slate-600 text-slate-200"> Ekspor Skor</button>
+            </div>
+            <!-- Navigation Tabs -->
+            <nav class="flex flex-wrap gap-2">
+                <button onclick="switchTab('adventure')" id="nav-adventure" class="px-3.5 py-2 rounded-lg text-sm font-semibold transition bg-indigo-600 text-white">
+                     Petualangan
+                </button>
+                <button onclick="switchTab('stages')" id="nav-stages" class="px-3.5 py-2 rounded-lg text-sm font-semibold transition bg-slate-700 hover:bg-slate-600 text-slate-300">
+                     Kuis Stage
+                </button>
+                <button onclick="switchTab('parafrase')" id="nav-parafrase" class="px-3.5 py-2 rounded-lg text-sm font-semibold transition bg-slate-700 hover:bg-slate-600 text-slate-300">
+                     Praktik Parafrase
+                </button>
+                <button onclick="switchTab('materi')" id="nav-materi" class="px-3.5 py-2 rounded-lg text-sm font-semibold transition bg-slate-700 hover:bg-slate-600 text-slate-300">
+                     Rangkuman Materi
+                </button>
+            <button onclick="switchTab('modul')" id="nav-modul" class="px-3.5 py-2 rounded-lg text-sm font-semibold transition bg-slate-700 text-slate-300">Modul</button><button onclick="switchTab('ujian')" id="nav-ujian" class="px-3.5 py-2 rounded-lg text-sm font-semibold transition bg-slate-700 text-slate-300">Ujian</button><button onclick="switchTab('latihan')" id="nav-latihan" class="px-3.5 py-2 rounded-lg text-sm font-semibold transition bg-slate-700 text-slate-300">Latihan</button><button onclick="switchTab('ai')" id="nav-ai" class="px-3.5 py-2 rounded-lg text-sm font-semibold transition bg-slate-700 text-slate-300">AI</button><button onclick="switchTab('dosen')" id="nav-dosen" class="px-3.5 py-2 rounded-lg text-sm font-semibold transition bg-slate-700 text-slate-300 hidden">Dosen</button></nav>
+        </div>
+    </header>
+
+    <!-- Main Content Container -->
+    <main class="flex-grow max-w-6xl w-full mx-auto p-4 md:p-6 space-y-6">
+
+        <!-- ================= KLASEMEN PESERTA & MANAJEMEN PENGGUNA ================= -->
+        <div class="bg-slate-800 border border-slate-700 p-4 rounded-xl shadow-md">
+            <div class="flex flex-col md:flex-row justify-between items-start md:items-center gap-3 mb-4 border-b border-slate-700 pb-3">
+                <h3 class="font-bold text-sm text-amber-400 uppercase tracking-wider flex items-center">
+                     Papan Skor Peserta (Kelompok / Individu)
+                </h3>
+                
+                <!-- Input Tambah Peserta -->
+                <div class="flex flex-wrap gap-2 w-full md:w-auto">
+                    <input type="text" id="input-player-name" placeholder="Nama Kelompok / Individu..." class="bg-slate-900 border border-slate-700 rounded-lg px-3 py-1.5 text-xs text-slate-200 focus:outline-none focus:border-indigo-500 flex-grow md:w-56">
+                    <button onclick="addPlayerManual()" class="bg-indigo-600 hover:bg-indigo-500 text-white text-xs font-semibold px-3 py-1.5 rounded-lg transition">
+                         Tambah
+                    </button>
+                    <button onclick="resetLeaderboard()" class="bg-slate-700 hover:bg-slate-600 text-slate-300 text-xs px-2.5 py-1.5 rounded-lg transition">
+                         Reset Poin
+                    </button>
+                </div>
+            </div>
+
+            <div id="leaderboard-container" class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-3">
+                <!-- Dynamic Player Cards -->
+            </div>
+        </div>
+
+        <!-- ================= MODE PETUALANGAN (STORY SIMULATOR) ================= -->
+        <section id="tab-adventure" class="block space-y-6">
+            <!-- Game Status Bar -->
+            <div class="grid grid-cols-1 md:grid-cols-4 gap-4 bg-slate-800 p-4 rounded-xl border border-slate-700">
+                <div class="flex items-center space-x-3">
+                    <div class="p-3 bg-blue-500/20 text-blue-400 rounded-lg"></div>
+                    <div>
+                        <div class="text-xs text-slate-400">Tahap Akademik</div>
+                        <div id="adv-stage-title" class="font-bold text-sm text-blue-300">Bab 1: Ide & Topik</div>
+                    </div>
+                </div>
+                <div class="flex items-center space-x-3">
+                    <div class="p-3 bg-emerald-500/20 text-emerald-400 rounded-lg"></div>
+                    <div class="w-full">
+                        <div class="text-xs text-slate-400 flex justify-between"><span>Kualitas Tulisan</span><span id="stat-quality-val">50%</span></div>
+                        <div class="w-full bg-slate-700 h-2 rounded-full overflow-hidden mt-1">
+                            <div id="stat-quality-bar" class="bg-emerald-500 h-full transition-all duration-300" style="width: 50%;"></div>
+                        </div>
+                    </div>
+                </div>
+                <div class="flex items-center space-x-3">
+                    <div class="p-3 bg-amber-500/20 text-amber-400 rounded-lg"></div>
+                    <div class="w-full">
+                        <div class="text-xs text-slate-400 flex justify-between"><span>Motivasi & Fokus</span><span id="stat-motivation-val">70%</span></div>
+                        <div class="w-full bg-slate-700 h-2 rounded-full overflow-hidden mt-1">
+                            <div id="stat-motivation-bar" class="bg-amber-500 h-full transition-all duration-300" style="width: 70%;"></div>
+                        </div>
+                    </div>
+                </div>
+                <div class="flex items-center space-x-3">
+                    <div class="p-3 bg-rose-500/20 text-rose-400 rounded-lg"></div>
+                    <div class="w-full">
+                        <div class="text-xs text-slate-400 flex justify-between"><span>Risiko Plagiarisme</span><span id="stat-risk-val">0%</span></div>
+                        <div class="w-full bg-slate-700 h-2 rounded-full overflow-hidden mt-1">
+                            <div id="stat-risk-bar" class="bg-rose-500 h-full transition-all duration-300" style="width: 0%;"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Story Box -->
+            <div class="bg-slate-800 rounded-xl p-6 border border-slate-700 shadow-xl relative">
+                <div class="flex justify-between items-center border-b border-slate-700 pb-3 mb-4">
+                    <span class="text-xs font-semibold uppercase tracking-wider text-indigo-400">Simulasi Studi Kasus</span>
+                    <button onclick="resetAdventure()" class="text-xs bg-indigo-600 hover:bg-indigo-500 text-white px-3 py-1.5 rounded-lg flex items-center transition">
+                         Acak Urutan Skenario (Reset)
+                    </button>
+                </div>
+
+                <div id="adv-story-body">
+                    <h2 id="adv-scenario-title" class="text-xl font-bold text-white mb-2">Skenario Diberikan</h2>
+                    <p id="adv-scenario-desc" class="text-slate-300 leading-relaxed mb-6">Deskripsi skenario akan tampil di sini...</p>
+                    
+                    <div class="space-y-3" id="adv-options-container">
+                        <!-- Dynamic Options -->
+                    </div>
+                </div>
+
+                <!-- Feedback Box -->
+                <div id="adv-feedback" class="hidden mt-6 p-4 rounded-lg bg-slate-900 border border-indigo-500/30">
+                    <h4 id="adv-feedback-title" class="font-bold text-indigo-400 mb-1">Dampak Keputusan:</h4>
+                    <p id="adv-feedback-desc" class="text-sm text-slate-300 mb-3"></p>
+                    <button id="adv-next-btn" onclick="nextAdventureStep()" class="px-4 py-2 bg-indigo-600 hover:bg-indigo-500 text-white font-semibold text-sm rounded-lg transition">
+                        Lanjut ke Skenario Berikutnya 
+                    </button>
+                </div>
+            </div>
+        </section>
+
+        <!-- ================= MODE KUIS STAGE (BERJENJANG LEVEL & ACAK SOAL) ================= -->
+        <section id="tab-stages" class="hidden space-y-6">
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                <div onclick="selectStage(1)" id="stage-card-1" class="cursor-pointer bg-slate-800 border-2 border-indigo-500 p-4 rounded-xl hover:bg-slate-700 transition relative overflow-hidden">
+                    <div class="text-xs font-bold text-indigo-400 uppercase">Stage 1</div>
+                    <div class="font-bold text-lg text-white">Pemula: Bentuk Masalah</div>
+                    <p class="text-xs text-slate-400 mt-1">Mengidentifikasi kendala & kebiasaan buruk dalam menulis.</p>
+                </div>
+                <div onclick="selectStage(2)" id="stage-card-2" class="cursor-pointer bg-slate-800 border-2 border-slate-700 p-4 rounded-xl hover:bg-slate-700 transition relative overflow-hidden">
+                    <div class="text-xs font-bold text-amber-400 uppercase">Stage 2</div>
+                    <div class="font-bold text-lg text-white">Menengah: Penyebab & Dampak</div>
+                    <p class="text-xs text-slate-400 mt-1">Menganalisis faktor internal/eksternal dan dampak akademik.</p>
+                </div>
+                <div onclick="selectStage(3)" id="stage-card-3" class="cursor-pointer bg-slate-800 border-2 border-slate-700 p-4 rounded-xl hover:bg-slate-700 transition relative overflow-hidden">
+                    <div class="text-xs font-bold text-emerald-400 uppercase">Stage 3</div>
+                    <div class="font-bold text-lg text-white">Lanjut: Solusi & Upaya</div>
+                    <p class="text-xs text-slate-400 mt-1">Menerapkan upaya konkret untuk tulisan berkualitas.</p>
+                </div>
+            </div>
+
+            <!-- Quiz Box -->
+            <div class="bg-slate-800 rounded-xl p-6 border border-slate-700 shadow-xl">
+                <div class="flex justify-between items-center border-b border-slate-700 pb-3 mb-4">
+                    <div class="flex items-center space-x-2">
+                        <span id="quiz-stage-badge" class="bg-indigo-500/20 text-indigo-300 text-xs font-bold px-2.5 py-1 rounded">STAGE 1</span>
+                        <span id="quiz-progress" class="text-xs text-slate-400">Soal 1</span>
+                    </div>
+                    <button onclick="resetAndShuffleCurrentStage()" class="text-xs bg-indigo-600 hover:bg-indigo-500 text-white px-3 py-1.5 rounded-lg flex items-center transition">
+                         Reset & Acak Soal Baru
+                    </button>
+                </div>
+
+                <div id="quiz-body">
+                    <h3 id="quiz-question" class="text-lg font-bold text-white mb-4">Pertanyaan Kuis</h3>
+                    <div id="quiz-options" class="space-y-3">
+                        <!-- Dynamic Options -->
+                    </div>
+                </div>
+
+                <!-- Quiz Explanation -->
+                <div id="quiz-explanation" class="hidden mt-6 p-4 rounded-lg bg-slate-900 border border-slate-700">
+                    <div id="quiz-result-title" class="font-bold mb-1"></div>
+                    <p id="quiz-result-text" class="text-sm text-slate-300 mb-3"></p>
+                    <button id="quiz-next-btn" onclick="nextQuizQuestion()" class="px-4 py-2 bg-indigo-600 hover:bg-indigo-500 text-white font-semibold text-sm rounded-lg transition">
+                        Soal Berikutnya 
+                    </button>
+                </div>
+            </div>
+        </section>
+
+        <!-- ================= MODE PRAKTIK PARAFRASE PENILAIAN LANGSUNG ================= -->
+        <section id="tab-parafrase" class="hidden space-y-6">
+            <div class="bg-slate-800 rounded-xl p-6 border border-slate-700 shadow-xl space-y-5">
+                <div class="flex justify-between items-center border-b border-slate-700 pb-3">
+                    <div>
+                        <h2 class="text-lg font-bold text-indigo-400 flex items-center">
+                             Tantangan Praktik Parafrase (Penilaian Otomatis)
+                        </h2>
+                        <p class="text-xs text-slate-400">Tuliskan versi parafrase baku Anda. Sistem memberi penilaian awal berbasis pencocokan kata (bersifat indikatif); keputusan akhir tetap pada dosen.</p>
+                    </div>
+                    <button onclick="nextParafraseChallenge()" class="text-xs bg-indigo-600 hover:bg-indigo-500 text-white px-3 py-1.5 rounded-lg transition flex items-center">
+                         Ganti Soal
+                    </button>
+                </div>
+
+                <!-- Teks Asli -->
+                <div class="bg-slate-900/90 p-4 rounded-lg border border-amber-500/30">
+                    <span class="text-xs font-bold text-amber-400 uppercase tracking-wide flex items-center">
+                         Teks Asli (Terlalu Kaku / Informal):
+                    </span>
+                    <p id="pf-original-text" class="text-slate-200 mt-2 font-serif italic text-base">"..."</p>
+                </div>
+
+                <!-- Area Input Jawaban Mahasiswa -->
+                <div>
+                    <label class="block text-xs font-semibold text-slate-300 mb-1">Draf Parafrase Mahasiswa / Kelompok:</label>
+                    <textarea id="pf-user-input" rows="3" class="w-full bg-slate-900 border border-slate-700 rounded-lg p-3 text-sm text-slate-100 focus:outline-none focus:border-indigo-500" placeholder="Ketikkan perbaikan kalimat di sini..."></textarea>
+                </div>
+
+                <!-- Tombol Aksi Penilaian Langsung -->
+                <div class="flex flex-wrap gap-3">
+                    <button onclick="evaluateDirectly()" class="px-5 py-2.5 bg-emerald-600 hover:bg-emerald-500 text-white font-semibold text-sm rounded-lg transition flex items-center shadow-lg">
+                         Periksa & Nilai Langsung
+                    </button>
+                    <button onclick="toggleIdealAnswer()" class="px-4 py-2.5 bg-slate-700 hover:bg-slate-600 text-slate-300 text-sm rounded-lg transition flex items-center">
+                         Lihat Kunci Jawaban Ideal
+                    </button>
+                    <button onclick="copyParafrase()" class="px-4 py-2.5 bg-slate-700 hover:bg-slate-600 text-slate-300 text-sm rounded-lg transition flex items-center"> Salin Hasil</button>
+                </div>
+
+                <div class="ailinks" data-mode="para"></div>
+
+                <!-- Kunci Jawaban Ideal (Hidden) -->
+                <div id="ideal-answer-box" class="hidden bg-slate-900/90 p-4 rounded-lg border border-slate-700">
+                    <span class="text-xs font-bold text-indigo-400 uppercase tracking-wide">Contoh Parafrase Akademik Ideal:</span>
+                    <p id="pf-ideal-text" class="text-slate-200 mt-1 font-sans text-sm">"..."</p>
+                </div>
+
+                <!-- Hasil Evaluasi Sistem Langsung -->
+                <div id="direct-eval-box" class="hidden bg-slate-900/95 p-5 rounded-lg border border-indigo-500/50 space-y-3">
+                    <div class="flex justify-between items-center border-b border-slate-800 pb-2">
+                        <span class="text-xs font-bold text-indigo-400 uppercase tracking-wider flex items-center">
+                             Laporan Analisis Otomatis Sistem
+                        </span>
+                        <span id="eval-score-badge" class="bg-indigo-500 text-white font-bold text-sm px-3 py-1 rounded-lg">Nilai: 0</span>
+                    </div>
+
+                    <!-- Rincian Parameter Penilaian -->
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-3 text-xs">
+                        <div class="bg-slate-800/80 p-3 rounded-lg border border-slate-700">
+                            <span class="text-slate-400">Kemiripan dengan Teks Asli:</span>
+                            <div id="eval-similarity-val" class="font-bold text-amber-400 mt-0.5">0%</div>
+                        </div>
+                        <div class="bg-slate-800/80 p-3 rounded-lg border border-slate-700">
+                            <span class="text-slate-400">Status Tata Bahasa Baku:</span>
+                            <div id="eval-slang-val" class="font-bold text-emerald-400 mt-0.5">Baku & Sesuai</div>
+                        </div>
+                    </div>
+
+                    <!-- Catatan Kesalahan Terperinci -->
+                    <div class="bg-slate-800/60 p-3 rounded-lg border border-slate-700">
+                        <span class="text-xs font-bold text-rose-400 uppercase tracking-wider block mb-1">Di mana letak kesalahannya?</span>
+                        <ul id="eval-mistakes-list" class="text-xs text-slate-300 space-y-1 list-disc list-inside">
+                            <!-- Mistakes listed here -->
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- ================= MODE MATERI (RANGKUMAN) ================= -->
+        <section id="tab-materi" class="hidden space-y-6">
+            <div class="bg-slate-800 rounded-xl p-6 border border-slate-700">
+                <h2 class="text-xl font-bold text-indigo-400 mb-4">Rangkuman Materi Menulis Akademik</h2>
+                
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <div class="bg-slate-900/60 p-4 rounded-lg border border-slate-700">
+                        <h3 class="font-bold text-amber-400 mb-2 flex items-center">Bentuk Permasalahan</h3>
+                        <ul class="text-sm text-slate-300 space-y-2 list-disc list-inside">
+                            <li>Kesulitan menemukan dan mengembangkan ide/gagasan utuh.</li>
+                            <li>Kesulitan menyusun paragraf dan struktur tulisan secara runtut.</li>
+                            <li>Ketergantungan pada kebiasaan <i>copy-paste</i> dari internet tanpa mengolah tulisan.</li>
+                            <li>Kesulitan melakukan parafrase dan mengintegrasikan sumber bacaan.</li>
+                            <li>Penggunaan bahasa kurang baku, tata bahasa lemah, serta kesalahan ejaan/tanda baca.</li>
+                        </ul>
+                    </div>
+
+                    <div class="bg-slate-900/60 p-4 rounded-lg border border-slate-700">
+                        <h3 class="font-bold text-rose-400 mb-2 flex items-center">Faktor Penyebab</h3>
+                        <ul class="text-sm text-slate-300 space-y-2 list-disc list-inside">
+                            <li><b>Faktor Internal:</b> Rendahnya kebiasaan membaca dan berlatih menulis, kurang motivasi, serta keterbatasan kosakata.</li>
+                            <li><b>Kurangnya Latihan & Bimbingan:</b> Jarang berlatih menulis serta kurang dapat bimbingan dan umpan balik.</li>
+                            <li><b>Faktor Eksternal:</b> Lingkungan belajar kurang mendukung serta distraksi media sosial.</li>
+                        </ul>
+                    </div>
+
+                    <div class="bg-slate-900/60 p-4 rounded-lg border border-slate-700">
+                        <h3 class="font-bold text-red-400 mb-2 flex items-center">Dampak yang Ditimbulkan</h3>
+                        <ul class="text-sm text-slate-300 space-y-2 list-disc list-inside">
+                            <li>Tulisan menjadi dangkal, kurang mendalam, dan tidak terstruktur.</li>
+                            <li>Penyampaian gagasan serta argumen ilmiah menjadi tidak jelas.</li>
+                            <li>Terjadinya kesalahan kutipan atau risiko tinggi pelanggaran etika/plagiarisme.</li>
+                            <li>Menghambat proses belajar dan berpengaruh buruk pada pencapaian akademik.</li>
+                            <li>Keterampilan berpikir kritis dan kemampuan analisis kurang berkembang.</li>
+                        </ul>
+                    </div>
+
+                    <div class="bg-slate-900/60 p-4 rounded-lg border border-slate-700">
+                        <h3 class="font-bold text-emerald-400 mb-2 flex items-center">Upaya & Solusi</h3>
+                        <ul class="text-sm text-slate-300 space-y-2 list-disc list-inside">
+                            <li>Membangun budaya literasi dengan membiasakan diri membaca sumber ilmiah terpercaya.</li>
+                            <li>Melakukan latihan menulis secara konsisten dan terencana.</li>
+                            <li>Aktif meminta bimbingan dan umpan balik (feedback) dari dosen/tutor.</li>
+                            <li>Memahami aturan penulisan baku, struktur karya ilmiah, serta teknik parafrase.</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+    
+<section id="tab-modul" class="hidden space-y-4">
+ <div class="bg-slate-800 border border-slate-700 rounded-xl p-4"><div class="text-xs text-slate-400 mb-1">Profil</div>
+  <div class="flex flex-wrap gap-2 items-center"><input id="ak-name" class="w-full bg-slate-900 border border-slate-600 rounded-lg p-2 text-sm text-slate-100 max-w-xs" maxlength="30" placeholder="Nama panggilan"><span class="akprof text-sm text-amber-300"></span></div>
+  <div class="flex flex-wrap gap-2 mt-3"><button class="px-3 py-2 rounded-lg text-sm font-semibold bg-slate-700 hover:bg-slate-600 text-slate-200" onclick="akPrint()">Cetak ringkasan</button><button class="px-3 py-2 rounded-lg text-sm font-semibold bg-slate-700 hover:bg-slate-600 text-slate-200" onclick="akDownload()">Unduh ringkasan (.html)</button></div>
+  <p class="text-xs text-slate-500 mt-2">Kemajuan tersimpan di perangkat ini. Bila halaman dibuka dengan akun, kemajuan ikut tersinkron lintas perangkat.</p></div>
+ <div class="bg-slate-800 border border-slate-700 rounded-xl p-4"><div class="font-bold mb-2">Pilih modul</div><div id="ak-topics" class="flex flex-wrap gap-2"></div>
+  <div id="ak-tip" class="mt-3 text-sm text-slate-300"></div><button id="ak-go" class="px-3 py-2 rounded-lg text-sm font-semibold bg-indigo-600 hover:bg-indigo-500 text-white mt-3 hidden">Latihan topik ini</button></div>
+</section>
+<section id="tab-ujian" class="hidden space-y-4">
+ <div class="bg-slate-800 border border-slate-700 rounded-xl p-4"><div class="akprof text-sm text-amber-300 mb-3"></div>
+  <div class="grid grid-cols-2 md:grid-cols-4 gap-2"><select id="ex-topic" class="w-full bg-slate-900 border border-slate-600 rounded-lg p-2 text-sm text-slate-100"></select>
+  <select id="ex-level" class="w-full bg-slate-900 border border-slate-600 rounded-lg p-2 text-sm text-slate-100"><option value="all">Semua tingkat</option><option value="0">Dasar</option><option value="1">Menengah</option><option value="2">Lanjut</option></select>
+  <select id="ex-time" class="w-full bg-slate-900 border border-slate-600 rounded-lg p-2 text-sm text-slate-100"><option value="0">Tanpa waktu</option><option value="20">20 detik/soal</option><option value="30">30 detik/soal</option></select>
+  <button id="ex-start" class="px-3 py-2 rounded-lg text-sm font-semibold bg-indigo-600 hover:bg-indigo-500 text-white">Mulai ujian</button></div>
+  <div class="flex flex-wrap gap-2 mt-2"><button id="ex-redo" class="px-3 py-2 rounded-lg text-sm font-semibold bg-slate-700 hover:bg-slate-600 text-slate-200">Ulang soal yang salah</button><button id="ex-proj" class="px-3 py-2 rounded-lg text-sm font-semibold bg-slate-700 hover:bg-slate-600 text-slate-200">Mode proyeksi</button></div>
+  <p class="text-xs text-slate-500 mt-2">Tombol 1-4 memilih jawaban, Enter untuk lanjut.</p></div>
+ <div id="ex-area" class="bg-slate-800 border border-slate-700 rounded-xl p-4 hidden"><div class="h-2 bg-slate-700 rounded mb-3"><div id="ex-bar" class="h-2 bg-indigo-500 rounded" style="width:100%"></div></div>
+  <div id="ex-prog" class="text-xs text-slate-400"></div><div id="ex-q" class="font-semibold text-lg my-2"></div><div id="ex-opts" class="space-y-2"></div>
+  <div id="ex-fb" class="hidden mt-3 text-sm"></div><button id="ex-next" class="px-3 py-2 rounded-lg text-sm font-semibold bg-indigo-600 hover:bg-indigo-500 text-white mt-3 hidden">Lanjut</button></div>
+ <div id="ex-end" class="bg-slate-800 border border-slate-700 rounded-xl p-4 hidden"><div id="ex-sum" class="font-bold text-lg"></div>
+  <div class="flex flex-wrap gap-2 mt-3 items-center"><select id="ex-who" class="w-full bg-slate-900 border border-slate-600 rounded-lg p-2 text-sm text-slate-100 max-w-xs"></select><button id="ex-rec" class="px-3 py-2 rounded-lg text-sm font-semibold bg-indigo-600 hover:bg-indigo-500 text-white">Catat ke papan skor</button></div></div>
+ <div id="live-wrap" class="bg-slate-800 border border-slate-700 rounded-xl p-4 hidden"><div class="font-bold mb-2">Papan skor langsung</div><ol id="live" class="text-sm space-y-1"></ol></div>
+</section>
+<section id="tab-latihan" class="hidden space-y-4">
+ <div class="akprof text-sm text-amber-300"></div>
+ <div class="bg-slate-800 border border-slate-700 rounded-xl p-4"><div class="font-bold">Temukan kesalahan</div><p class="text-xs text-slate-400 mb-2">Klik semua kata atau bagian yang salah (tidak baku, mubazir, sitasi tidak lengkap, ejaan).</p>
+  <div id="fe-text" class="flex flex-wrap gap-1 leading-8"></div><div id="fe-fb" class="text-sm mt-2"></div>
+  <div class="flex gap-2 mt-3"><button id="fe-chk" class="px-3 py-2 rounded-lg text-sm font-semibold bg-indigo-600 hover:bg-indigo-500 text-white">Periksa</button><button id="fe-nxt" class="px-3 py-2 rounded-lg text-sm font-semibold bg-slate-700 hover:bg-slate-600 text-slate-200">Soal berikutnya</button></div></div>
+ <div class="bg-slate-800 border border-slate-700 rounded-xl p-4"><div class="font-bold">Latihan menyusun</div><p id="su-t" class="text-xs text-slate-400 mb-2"></p>
+  <ul id="su-list" class="space-y-2"></ul><div id="su-fb" class="text-sm mt-2"></div>
+  <div class="flex gap-2 mt-3"><button id="su-chk" class="px-3 py-2 rounded-lg text-sm font-semibold bg-indigo-600 hover:bg-indigo-500 text-white">Periksa urutan</button><button id="su-nxt" class="px-3 py-2 rounded-lg text-sm font-semibold bg-slate-700 hover:bg-slate-600 text-slate-200">Set berikutnya</button></div></div>
+</section>
+<section id="tab-ai" class="hidden space-y-4"><div id="tabs" class="aitabs"></div>
+
+
+
+<section id="t-rev" class="card">
+  <label for="r-teks">Paragrafmu</label>
+  <textarea id="r-teks" placeholder="Tempel satu paragraf tulisanmu"></textarea>
+  <label for="r-asp">Fokus saran</label>
+  <select id="r-asp"><option>Struktur, bahasa baku, dan sitasi</option><option>Struktur dan alur argumen</option><option>Bahasa baku dan kalimat efektif</option><option>Sitasi dan atribusi sumber</option></select>
+  <div class="row"><button class="btn pri" id="r-go">Minta saran revisi</button><button class="btn" id="r-quick">Pemeriksa cepat (tanpa AI)</button></div>
+  <p class="note">AI tidak menulis ulang paragrafmu. Ia menunjukkan letak masalah dan arah perbaikannya.</p>
+  <div class="ailinks" data-mode="rev"></div><div class="out" id="r-out"></div>
+</section>
+
+<section id="t-soal" class="card hide">
+  <label for="s-bahan">Bahan kuliah</label>
+  <textarea id="s-bahan" style="min-height:160px" placeholder="Tempel materi/ringkasan kuliah (beberapa paragraf)"></textarea>
+  <div class="row"><div><label for="s-n">Jumlah soal</label><select id="s-n"><option>3</option><option selected>5</option><option>8</option></select></div>
+  <div><label for="s-lv">Tingkat</label><select id="s-lv"><option>Dasar</option><option selected>Menengah</option><option>Lanjut</option></select></div></div>
+  <div class="row"><button class="btn pri" id="s-go">Buat soal kasus</button>
+  <button class="btn hide" id="s-copy">Salin JSON (format Akademika Quest)</button></div>
+  <div class="ailinks" data-mode="soal"></div><div class="out" id="s-out"></div>
+</section>
+
+<section id="t-mir" class="card hide">
+  <label for="m-a">Teks mahasiswa</label>
+  <textarea id="m-a"></textarea>
+  <label for="m-b">Teks sumber pembanding</label>
+  <textarea id="m-b" placeholder="Tempel teks sumber yang ingin dibandingkan"></textarea>
+  <div class="row"><button class="btn pri" id="m-go">Periksa kemiripan</button></div>
+  <p class="note">Pemeriksaan ini berjalan di perangkatmu dan hanya membandingkan dengan teks yang kamu tempel. Ini bukan pencarian internet.</p>
+  <div class="out wide" id="m-out"></div>
+</section>
+</section>
+<section id="tab-dosen" class="hidden space-y-4">
+ <div class="bg-slate-800 border border-slate-700 rounded-xl p-4"><div class="font-bold">Dasbor dosen</div><p class="text-xs text-slate-400">Menampilkan hasil mahasiswa yang membuka halaman ini dengan akun dan hak kontributor.</p>
+  <div class="flex gap-2 mt-2"><button id="ds-load" class="px-3 py-2 rounded-lg text-sm font-semibold bg-indigo-600 hover:bg-indigo-500 text-white">Muat hasil</button><button id="ds-csv" class="px-3 py-2 rounded-lg text-sm font-semibold bg-slate-700 hover:bg-slate-600 text-slate-200">Unduh CSV</button></div><div id="ds-out" class="mt-3 text-sm overflow-x-auto"></div></div>
+</section>
+<div id="print-area"></div><div id="toast"></div><button class="projx px-3 py-2 rounded-lg text-sm font-semibold bg-indigo-600 hover:bg-indigo-500 text-white" onclick="document.documentElement.classList.remove('proj')">Keluar proyeksi</button>
+</main>
+
+    <!-- JavaScript Logic -->
+    <script>
+        // Utility Function: Fisher-Yates Array Shuffle
+        function shuffleArray(array) {
+            let arr = [...array];
+            for (let i = arr.length - 1; i > 0; i--) {
+                const j = Math.floor(Math.random() * (i + 1));
+                [arr[i], arr[j]] = [arr[j], arr[i]];
+            }
+            return arr;
+        }
+
+        // Tab Navigation
+        function switchTab(tabName) {
+            document.querySelectorAll('main > section').forEach(sec => sec.classList.add('hidden'));
+            document.getElementById('tab-' + tabName).classList.remove('hidden');
+
+            document.querySelectorAll('nav button').forEach(btn => {
+                btn.classList.remove('bg-indigo-600', 'text-white');
+                btn.classList.add('bg-slate-700', 'text-slate-300');
+            });
+            const activeBtn = document.getElementById('nav-' + tabName);
+            activeBtn.classList.remove('bg-slate-700', 'text-slate-300');
+            activeBtn.classList.add('bg-indigo-600', 'text-white');
+        }
+
+        /* ================= LEADERBOARD LOGIC ================= */
+        const STORE_KEY = 'akademika_players';
+        let players = { 'Kelompok 1': 0, 'Kelompok 2': 0, 'Andi (Individu)': 0 };
+        try { const sv = JSON.parse(localStorage.getItem(STORE_KEY)); if (sv && typeof sv === 'object') players = sv; } catch (e) {}
+        function savePlayers() { try { localStorage.setItem(STORE_KEY, JSON.stringify(players)); } catch (e) {} }
+
+        function mkBtn(html, cls, fn, title) {
+            const b = document.createElement('button');
+            b.className = cls; b.innerHTML = html; b.onclick = fn;
+            if (title) b.title = title;
+            return b;
+        }
+
+        function renderLeaderboard() {
+            const container = document.getElementById('leaderboard-container');
+            container.innerHTML = '';
+            Object.keys(players).sort((x, y) => players[y] - players[x]).forEach((pName, i) => {
+                const card = document.createElement('div');
+                card.className = "bg-slate-900 p-3 rounded-lg border border-slate-700 flex justify-between items-center";
+                const left = document.createElement('div');
+                left.className = 'overflow-hidden pr-2';
+                const n = document.createElement('div');
+                n.className = 'text-xs font-bold text-slate-200 truncate';
+                n.textContent = (i === 0 && players[pName] > 0 ? '🥇 ' : '') + pName;
+                const sc = document.createElement('div');
+                sc.className = 'text-base font-bold text-amber-400';
+                sc.textContent = players[pName] + ' Poin';
+                left.append(n, sc);
+                const right = document.createElement('div');
+                right.className = 'flex items-center gap-1';
+                right.append(
+                    mkBtn('+10', 'bg-emerald-600/80 hover:bg-emerald-500 text-white text-xs px-2 py-1 rounded', () => addScore(pName, 10)),
+                    mkBtn('-10', 'bg-rose-600/80 hover:bg-rose-500 text-white text-xs px-2 py-1 rounded', () => addScore(pName, -10)),
+                    mkBtn('✕', 'bg-slate-700 hover:bg-rose-700 text-slate-400 hover:text-white text-xs px-1.5 py-1 rounded ml-1', () => removePlayer(pName), 'Hapus')
+                );
+                card.append(left, right);
+                container.appendChild(card);
+            });
+            savePlayers();
+        }
+
+        function addPlayerManual() {
+            const input = document.getElementById('input-player-name');
+            const name = input.value.trim();
+            if (!name) return;
+            if (name === '__proto__' || Object.prototype.hasOwnProperty.call(players, name)) {
+                alert("Nama peserta atau kelompok ini tidak bisa dipakai atau sudah ada!");
+                return;
+            }
+            players[name] = 0;
+            input.value = '';
+            renderLeaderboard();
+        }
+        function removePlayer(pName) { delete players[pName]; renderLeaderboard(); }
+        function addScore(pName, delta) { players[pName] = Math.max(0, players[pName] + delta); renderLeaderboard(); }
+        function resetLeaderboard() { for (let k in players) players[k] = 0; renderLeaderboard(); }
+
+        /* ================= MODE PETUALANGAN LOGIC ================= */
+        const masterAdventureScenarios = [
+            {
+                title: "Menentukan Ide & Gagasan Utama",
+                desc: "Anda diminta menyusun bagian pendahuluan makalah. Namun Anda merasa bingung dan kesulitan menemukan gagasan tulisan secara utuh.",
+                options: [
+                    {
+                        text: "Mencari artikel digital lalu langsung menyalin (copy-paste) beberapa paragraf agar tugas cepat selesai.",
+                        qualityDelta: -20, motivationDelta: -10, riskDelta: +35,
+                        feedback: "Keputusan Berisiko! Ketergantungan pada copy-paste membuat Anda tidak berlatih mengolah ide sendiri dan meningkatkan risiko plagiarisme."
+                    },
+                    {
+                        text: "Membaca beberapa artikel ilmiah yang relevan terlebih dahulu, lalu mencatat poin penting dengan bahasa sendiri.",
+                        qualityDelta: +25, motivationDelta: +10, riskDelta: 0,
+                        feedback: "Pilihan Sangat Tepat! Membiasakan membaca referensi membantu melatih kemampuan berpikir kritis dan mengembangkan gagasan utuh."
+                    },
+                    {
+                        text: "Menunda menulis dan menunggu sampai mendapat inspirasi instan dari teman.",
+                        qualityDelta: -5, motivationDelta: -20, riskDelta: 0,
+                        feedback: "Kurang Efektif. Kurangnya latihan dan kebiasaan menulis hanya akan membuat proses penulisan makin terhambat."
+                    }
+                ]
+            },
+            {
+                title: "Mengintegrasikan Sumber & Referensi",
+                desc: "Anda menemukan kalimat yang sangat bagus dari sebuah artikel jurnal ilmiah. Bagaimana Anda memasukkannya ke dalam paragraf tulisan Anda?",
+                options: [
+                    {
+                        text: "Mengubah struktur kalimat dan menggunakan kata-kata sendiri (parafrase) tanpa mengubah makna aslinya.",
+                        qualityDelta: +25, motivationDelta: +10, riskDelta: 0,
+                        feedback: "Luar Biasa! Melakukan parafrase dengan baik menunjukkan pemahaman materi mendalam serta menjaga etika penulisan."
+                    },
+                    {
+                        text: "Menyalin ulang seluruh kalimat secara persis tanpa mengubah satu kata pun.",
+                        qualityDelta: -10, motivationDelta: 0, riskDelta: +30,
+                        feedback: "Hati-hati! Mengutip mentah-mentah tanpa teknik parafrase membuat tulisan terlihat tidak orisinal dan berisiko plagiarisme."
+                    },
+                    {
+                        text: "Mengabaikan sumber ilmiah tersebut dan menulis berdasarkan opini pribadi saja.",
+                        qualityDelta: -15, motivationDelta: -5, riskDelta: 0,
+                        feedback: "Kurang Kuat! Tulisan akademik membutuhkan dukungan referensi terpercaya agar argumen menjadi valid dan mendalam."
+                    }
+                ]
+            },
+            {
+                title: "Menyusun Paragraf & Argumentasi",
+                desc: "Saat menyusun bab pembahasan, Anda merasa ide paragraf satu dengan paragraf berikutnya terasa melompat-lompat dan tidak teratur.",
+                options: [
+                    {
+                        text: "Membiarkannya saja yang penting jumlah halaman tugas terpenuhi.",
+                        qualityDelta: -20, motivationDelta: -10, riskDelta: 0,
+                        feedback: "Dampak Negatif! Paragraf yang tidak runtut menyebabkan tulisan sulit dipahami dan argumen menjadi sangat lemah."
+                    },
+                    {
+                        text: "Meminta bimbingan dosen atau umpan balik teman untuk merapikan kembali kata penghubung antarparagraf.",
+                        qualityDelta: +20, motivationDelta: +15, riskDelta: 0,
+                        feedback: "Sangat Bagus! Meminta bimbingan/umpan balik dan rutin merevisi draf adalah kunci sukses menulis secara runtut."
+                    }
+                ]
+            }
+            ,{
+                title: "Mengutip Pendapat Ahli",
+                desc: "Anda memakai pendapat seorang ahli dari sebuah buku pada makalah Anda. Apa yang Anda lakukan?",
+                options: [
+                    { text: "Memparafrase pendapat tersebut, menuliskan sitasi di teks, dan memasukkannya ke daftar pustaka.", qualityDelta: +20, motivationDelta: +10, riskDelta: 0, feedback: "Tepat! Sitasi dan daftar pustaka menjaga etika dan membuat argumen Anda dapat ditelusuri." },
+                    { text: "Tidak mencantumkan sumber karena kalimatnya sudah Anda tulis ulang dengan kata sendiri.", qualityDelta: -10, motivationDelta: 0, riskDelta: +30, feedback: "Berisiko! Parafrase tetap memerlukan sitasi, karena gagasannya milik orang lain." },
+                    { text: "Mengutip dari blog tanpa nama penulis karena isinya mirip dengan buku tersebut.", qualityDelta: -5, motivationDelta: -5, riskDelta: +10, feedback: "Kurang kuat. Sumber tanpa penulis jelas sulit dipertanggungjawabkan; rujuk sumber aslinya." }
+                ]
+            },
+            {
+                title: "Merevisi Bahasa Tulisan",
+                desc: "Saat merevisi, Anda menemukan kalimat berbahasa lisan seperti 'bikin' dan 'gak' di draf Anda.",
+                options: [
+                    { text: "Mengganti dengan bentuk baku dan memeriksa ejaan serta tanda baca sebelum dikumpulkan.", qualityDelta: +20, motivationDelta: +10, riskDelta: 0, feedback: "Bagus! Revisi bahasa membuat tulisan lugas dan layak disebut ilmiah." },
+                    { text: "Membiarkannya, yang penting maksudnya dimengerti.", qualityDelta: -15, motivationDelta: -5, riskDelta: 0, feedback: "Kurang tepat. Karya ilmiah menuntut ragam bahasa baku." },
+                    { text: "Meminta alat otomatis menulis ulang seluruh bagian lalu mengumpulkannya tanpa dibaca ulang.", qualityDelta: -10, motivationDelta: -5, riskDelta: +25, feedback: "Berisiko! Tulisan yang tidak Anda olah sendiri dan tidak diperiksa dapat memuat kesalahan serta melanggar etika akademik." }
+                ]
+            }
+        ];
+
+        let activeAdventureScenarios = [];
+        let advStep = 0;
+        let statQuality = 50;
+        let statMotivation = 70;
+        let statRisk = 0;
+
+        function updateAdventureUI() {
+            document.getElementById('stat-quality-val').innerText = statQuality + '%';
+            document.getElementById('stat-quality-bar').style.width = Math.max(0, Math.min(100, statQuality)) + '%';
+
+            document.getElementById('stat-motivation-val').innerText = statMotivation + '%';
+            document.getElementById('stat-motivation-bar').style.width = Math.max(0, Math.min(100, statMotivation)) + '%';
+
+            document.getElementById('stat-risk-val').innerText = statRisk + '%';
+            document.getElementById('stat-risk-bar').style.width = Math.max(0, Math.min(100, statRisk)) + '%';
+
+            if (advStep < activeAdventureScenarios.length) {
+                const data = activeAdventureScenarios[advStep];
+                document.getElementById('adv-stage-title').innerText = `Tahap ${advStep + 1} dari ${activeAdventureScenarios.length}`;
+                document.getElementById('adv-scenario-title').innerText = data.title;
+                document.getElementById('adv-scenario-desc').innerText = data.desc;
+
+                const optionsContainer = document.getElementById('adv-options-container');
+                optionsContainer.innerHTML = '';
+                
+                const shuffledOpts = shuffleArray(data.options);
+                shuffledOpts.forEach((opt, idx) => {
+                    const btn = document.createElement('button');
+                    btn.className = "w-full text-left p-3.5 rounded-lg bg-slate-700/60 hover:bg-slate-700 border border-slate-600 transition text-sm text-slate-200 flex items-start space-x-3";
+                    btn.innerHTML = `<span class="bg-indigo-600 text-white font-bold text-xs px-2 py-0.5 rounded mt-0.5">${String.fromCharCode(65 + idx)}</span> <span>${opt.text}</span>`;
+                    btn.onclick = () => chooseAdventureOption(opt);
+                    optionsContainer.appendChild(btn);
+                });
+
+                document.getElementById('adv-feedback').classList.add('hidden');
+                document.getElementById('adv-options-container').classList.remove('hidden');
+            } else {
+                showAdventureSummary();
+            }
+        }
+
+        function chooseAdventureOption(opt) {
+            statQuality = Math.max(0, Math.min(100, statQuality + opt.qualityDelta));
+            statMotivation = Math.max(0, Math.min(100, statMotivation + opt.motivationDelta));
+            statRisk = Math.max(0, Math.min(100, statRisk + opt.riskDelta));
+
+            document.getElementById('adv-options-container').classList.add('hidden');
+            const feedbackBox = document.getElementById('adv-feedback');
+            feedbackBox.classList.remove('hidden');
+            document.getElementById('adv-feedback-desc').innerText = opt.feedback;
+
+            document.getElementById('stat-quality-val').innerText = statQuality + '%';
+            document.getElementById('stat-quality-bar').style.width = statQuality + '%';
+            document.getElementById('stat-motivation-val').innerText = statMotivation + '%';
+            document.getElementById('stat-motivation-bar').style.width = statMotivation + '%';
+            document.getElementById('stat-risk-val').innerText = statRisk + '%';
+            document.getElementById('stat-risk-bar').style.width = statRisk + '%';
+        }
+
+        function nextAdventureStep() {
+            advStep++;
+            updateAdventureUI();
+        }
+
+        function showAdventureSummary() {
+            document.getElementById('adv-stage-title').innerText = "Selesai";
+            document.getElementById('adv-scenario-title').innerText = "🎉 Simulasi Selesai!";
+            
+            let resultStatus = "";
+            if (statRisk >= 30) {
+                resultStatus = "<span class='text-rose-400 font-bold'>Perlu Revisi Besar (Risiko Plagiarisme Tinggi)</span>. Disarankan untuk lebih banyak berlatih melakukan parafrase secara mandiri.";
+            } else if (statQuality >= 70) {
+                resultStatus = "<span class='text-emerald-400 font-bold'>Sangat Baik (Lulus Memuaskan)</span>! Anda berhasil menyusun tulisan yang sistematis, logis, dan mendalam.";
+                confetti({ particleCount: 100, spread: 70, origin: { y: 0.6 } });
+            } else {
+                resultStatus = "<span class='text-amber-400 font-bold'>Perlu Perbaikan</span>. Tulisan Anda masih perlu ditingkatkan dalam keterpaduan paragraf dan kedalaman argumen.";
+            }
+
+            if (statMotivation < 40) resultStatus += ' Motivasi Anda juga menurun; atur jadwal menulis dan mintalah umpan balik.';
+            document.getElementById('adv-scenario-desc').innerHTML = `
+                <div class="space-y-3">
+                    <p>Hasil Akhir Evaluasi Tulisan Akademik Anda:</p>
+                    <div class="p-4 bg-slate-900 rounded-lg border border-slate-700 text-sm">
+                        <b>Status Akhir:</b> ${resultStatus}<div class="mt-2 text-xs text-slate-400">Kualitas ${statQuality}% · Motivasi ${statMotivation}% · Risiko plagiarisme ${statRisk}%</div>
+                    </div>
+                </div>
+            `;
+            document.getElementById('adv-options-container').innerHTML = '';
+            document.getElementById('adv-feedback').classList.add('hidden');
+        }
+
+        function resetAdventure() {
+            advStep = 0;
+            statQuality = 50;
+            statMotivation = 70;
+            statRisk = 0;
+            activeAdventureScenarios = shuffleArray(masterAdventureScenarios);
+            updateAdventureUI();
+        }
+
+        /* ================= MODE KUIS STAGE LOGIC (BANK SOAL MELIMPAH & RANDOM) ================= */
+        const masterQuizBank = {
+ "1": [
+  {
+   "q": "Rina menulis tiga paragraf tentang literasi digital. Ia menyalin kalimat dari sebuah artikel, mengganti beberapa kata dengan sinonim, dan tidak mencantumkan sumber. Apa masalah utamanya?",
+   "options": [
+    "Pilihan sinonim yang kurang tepat",
+    "Plagiarisme, karena gagasan orang lain dipakai tanpa atribusi",
+    "Paragraf terlalu pendek untuk topiknya",
+    "Penggunaan istilah asing di dalam tulisan"
+   ],
+   "correct": 1,
+   "exp": "Mengganti kata tanpa mengubah struktur dan tanpa sumber tetap tergolong plagiarisme."
+  },
+  {
+   "q": "Draf Dimas mencampur latar belakang, data, dan kesimpulan dalam satu paragraf panjang tanpa urutan. Kelemahan yang paling tepat?",
+   "options": [
+    "Struktur tidak runtut sehingga alur argumen sulit diikuti",
+    "Jumlah kata melebihi batas yang ditentukan",
+    "Jenis huruf dan spasi tidak seragam",
+    "Kalimat pembuka kurang menarik perhatian"
+   ],
+   "correct": 0,
+   "exp": "Tulisan akademik membutuhkan pengorganisasian gagasan yang jelas agar argumen dapat dipahami."
+  },
+  {
+   "q": "Perhatikan kalimat: \"Menurut Pak Budi, gak semua mahasiswa bikin tugas dengan jujur.\" Aspek apa yang perlu diperbaiki?",
+   "options": [
+    "Tanda koma setelah kata menurut",
+    "Ragam bahasa lisan dan tidak baku (gak, bikin)",
+    "Penyebutan nama tokoh tanpa gelar lengkap",
+    "Panjang kalimat yang berlebihan"
+   ],
+   "correct": 1,
+   "exp": "Karya ilmiah memakai ragam bahasa baku: tidak, membuat."
+  },
+  {
+   "q": "Seorang mahasiswa menulis \"(Santoso, 2020)\" di teks, tetapi nama itu tidak ada di daftar pustaka. Apa masalahnya?",
+   "options": [
+    "Tahun terbit seharusnya ditulis lebih dulu",
+    "Sitasi tidak terhubung dengan daftar pustaka sehingga sumber tidak dapat ditelusuri",
+    "Nama penulis harus ditulis dengan huruf kapital semua",
+    "Sitasi hanya boleh dipakai pada bagian kesimpulan"
+   ],
+   "correct": 1,
+   "exp": "Setiap sitasi di teks harus punya pasangan lengkap di daftar pustaka."
+  },
+  {
+   "q": "Sebuah draf dikumpulkan tepat saat tenggat tanpa dibaca ulang, dan penuh salah ketik serta kalimat bertele-tele. Kebiasaan buruk apa yang tampak?",
+   "options": [
+    "Tidak menyisihkan waktu untuk revisi dan penyuntingan",
+    "Memilih topik yang terlalu sempit",
+    "Memakai terlalu banyak sumber pustaka",
+    "Menulis lebih cepat dari teman sekelas"
+   ],
+   "correct": 0,
+   "exp": "Revisi dan penyuntingan adalah tahap penting yang sering dilewatkan."
+  }
+ ],
+ "2": [
+  {
+   "q": "Survei kelas menunjukkan banyak mahasiswa baru mulai menulis sehari sebelum tenggat. Apa penyebab paling mungkin dari rendahnya kualitas tulisan mereka?",
+   "options": [
+    "Manajemen waktu yang lemah sehingga tidak ada ruang untuk riset dan revisi",
+    "Kurangnya variasi font pada dokumen",
+    "Dosen terlalu sering memberi tugas lisan",
+    "Jumlah halaman yang diminta terlalu sedikit"
+   ],
+   "correct": 0,
+   "exp": "Menunda pekerjaan menghilangkan waktu untuk membaca, menyusun, dan merevisi."
+  },
+  {
+   "q": "Manakah yang termasuk faktor penyebab INTERNAL dalam kesulitan menulis akademik?",
+   "options": [
+    "Akses jurnal berbayar yang terbatas",
+    "Rendahnya motivasi dan kebiasaan membaca penulis",
+    "Koneksi internet kampus yang tidak stabil",
+    "Jadwal perkuliahan yang padat dari kampus"
+   ],
+   "correct": 1,
+   "exp": "Faktor internal berasal dari diri penulis, seperti motivasi, kebiasaan, dan keterampilan."
+  },
+  {
+   "q": "Apa dampak akademik jangka panjang dari kebiasaan menyalin tanpa sitasi?",
+   "options": [
+    "Nilai tugas pasti naik karena tampak rapi",
+    "Sanksi akademik dan hilangnya kredibilitas penulis",
+    "Dosen lebih mudah memeriksa tugas",
+    "Perpustakaan menambah koleksi bukunya"
+   ],
+   "correct": 1,
+   "exp": "Pelanggaran etika akademik dapat berujung sanksi dan merusak reputasi."
+  },
+  {
+   "q": "Tulisan penuh kalimat ambigu membuat pembimbing salah menafsirkan argumen mahasiswa. Aspek apa yang terdampak?",
+   "options": [
+    "Komunikasi gagasan terhambat sehingga argumen kehilangan daya yakin",
+    "Jumlah referensi otomatis bertambah",
+    "Ukuran file dokumen menjadi lebih kecil",
+    "Format sampul menjadi tidak sesuai"
+   ],
+   "correct": 0,
+   "exp": "Kalimat yang ambigu menghambat pembaca memahami dan menilai argumen."
+  },
+  {
+   "q": "Mahasiswa A kesulitan mencari referensi karena tidak tahu kata kunci pencarian. Mahasiswa B kesulitan karena perpustakaan tutup. Pasangan jenis penyebab yang tepat?",
+   "options": [
+    "A eksternal, B internal",
+    "A internal (keterampilan), B eksternal (fasilitas)",
+    "Keduanya internal",
+    "Keduanya eksternal"
+   ],
+   "correct": 1,
+   "exp": "Keterampilan mencari kata kunci adalah faktor internal; fasilitas yang tutup adalah faktor eksternal."
+  }
+ ],
+ "3": [
+  {
+   "q": "Manakah langkah parafrase yang benar?",
+   "options": [
+    "Mengganti beberapa kata dengan sinonim dan mempertahankan struktur",
+    "Memahami gagasan, menulis ulang dengan struktur sendiri, lalu mencantumkan sumber",
+    "Menerjemahkan teks ke bahasa lain tanpa menyebut sumber",
+    "Memotong kalimat asli menjadi lebih pendek"
+   ],
+   "correct": 1,
+   "exp": "Parafrase menyampaikan makna yang sama dengan susunan sendiri dan tetap memerlukan sumber."
+  },
+  {
+   "q": "Sebelum menulis argumentasi panjang, langkah apa yang paling membantu menjaga struktur?",
+   "options": [
+    "Menyusun kerangka tulisan (outline) lebih dulu",
+    "Menulis kesimpulan paling akhir tanpa rencana",
+    "Menyalin kerangka milik teman",
+    "Menambah kutipan sebanyak mungkin"
+   ],
+   "correct": 0,
+   "exp": "Outline menjaga urutan gagasan dan mencegah tulisan melebar."
+  },
+  {
+   "q": "Cara paling efektif memperbaiki kualitas tulisan setelah draf selesai?",
+   "options": [
+    "Mengumpulkan segera agar tidak lupa",
+    "Mengendapkan draf lalu merevisi dengan umpan balik yang konstruktif",
+    "Menambah kata-kata sulit agar terdengar ilmiah",
+    "Menghapus semua kutipan agar tampak orisinal"
+   ],
+   "correct": 1,
+   "exp": "Jeda dan umpan balik membantu menemukan kelemahan yang tidak terlihat saat menulis."
+  },
+  {
+   "q": "Bagaimana menjaga sitasi tetap konsisten sepanjang makalah?",
+   "options": [
+    "Mencatat sumber saat membaca dan memakai satu gaya sitasi",
+    "Menunda pencatatan sumber sampai akhir",
+    "Mengganti gaya sitasi di setiap bab",
+    "Hanya mencantumkan sumber yang disetujui teman"
+   ],
+   "correct": 0,
+   "exp": "Pencatatan sejak awal dan satu gaya sitasi mencegah kekeliruan dan sumber yang hilang."
+  },
+  {
+   "q": "Kalimat \"Banyak orang bikin tulisan asal-asalan\" paling tepat direvisi menjadi...",
+   "options": [
+    "Banyak orang membuat tulisan yang kurang cermat.",
+    "Banyak orang bikin tulisan yang kurang cermat.",
+    "Banyak orang membikin tulisan asal-asalan.",
+    "Orang-orang bikin tulisan tanpa cermat."
+   ],
+   "correct": 0,
+   "exp": "Pilihan pertama memakai kata baku dan diksi yang netral serta lugas."
+  }
+ ]
+};
+
+        let currentStage = 1;
+        let activeQuizQuestions = [];
+        let currentQuestionIdx = 0;
+        let quizCorrect = 0;
+
+        function selectStage(stageNum) {
+            currentStage = stageNum;
+            for(let i=1; i<=3; i++) {
+                const card = document.getElementById(`stage-card-${i}`);
+                if(i === stageNum) {
+                    card.classList.remove('border-slate-700');
+                    card.classList.add('border-indigo-500');
+                } else {
+                    card.classList.remove('border-indigo-500');
+                    card.classList.add('border-slate-700');
+                }
+            }
+            document.getElementById('quiz-stage-badge').innerText = `STAGE ${stageNum}`;
+            resetAndShuffleCurrentStage();
+        }
+
+        function resetAndShuffleCurrentStage() {
+            currentQuestionIdx = 0;
+            quizCorrect = 0;
+            activeQuizQuestions = shuffleArray(masterQuizBank[currentStage]);
+            loadQuizQuestion();
+        }
+
+        function loadQuizQuestion() {
+            const q = activeQuizQuestions[currentQuestionIdx];
+
+            document.getElementById('quiz-progress').innerText = `Soal ${currentQuestionIdx + 1} dari ${activeQuizQuestions.length}`;
+            document.getElementById('quiz-question').innerText = q.q;
+
+            const optionsBox = document.getElementById('quiz-options');
+            optionsBox.innerHTML = '';
+
+            let indexedOpts = q.options.map((optText, i) => ({ text: optText, isCorrect: i === q.correct }));
+            indexedOpts = shuffleArray(indexedOpts);
+
+            indexedOpts.forEach((optObj, idx) => {
+                const btn = document.createElement('button');
+                btn.className = "w-full text-left p-3.5 rounded-lg bg-slate-700/60 hover:bg-slate-700 border border-slate-600 transition text-sm text-slate-200 flex items-center space-x-3";
+                btn.innerHTML = `<span class="w-6 h-6 rounded-full bg-slate-600 text-slate-200 flex items-center justify-center text-xs font-bold">${idx + 1}</span><span>${optObj.text}</span>`;
+                btn.onclick = () => checkQuizAnswer(optObj.isCorrect, q.exp);
+                optionsBox.appendChild(btn);
+            });
+
+            document.getElementById('quiz-explanation').classList.add('hidden');
+            document.getElementById('quiz-options').classList.remove('hidden');
+        }
+
+        function checkQuizAnswer(isCorrect, expText) {
+            const expBox = document.getElementById('quiz-explanation');
+            const resTitle = document.getElementById('quiz-result-title');
+            
+            document.getElementById('quiz-options').classList.add('hidden');
+            expBox.classList.remove('hidden');
+
+            if(isCorrect) {
+                quizCorrect++;
+                resTitle.className = "font-bold text-emerald-400 mb-1";
+                resTitle.innerText = "Jawaban Tepat!";
+            } else {
+                resTitle.className = "font-bold text-rose-400 mb-1";
+                resTitle.innerText = "Jawaban Kurang Tepat!";
+            }
+
+            document.getElementById('quiz-result-text').innerText = expText;
+        }
+
+        function nextQuizQuestion() {
+            if(currentQuestionIdx < activeQuizQuestions.length - 1) {
+                currentQuestionIdx++;
+                loadQuizQuestion();
+            } else {
+                document.getElementById('quiz-question').innerText = `🎉 Selamat! Anda telah menyelesaikan seluruh soal pada Stage ${currentStage}. Skor: ${quizCorrect} dari ${activeQuizQuestions.length} jawaban benar. Klik 'Reset & Acak Soal Baru' jika ingin mengulang kembali dengan urutan acak!`;
+                document.getElementById('quiz-options').innerHTML = '';
+                document.getElementById('quiz-explanation').classList.add('hidden');
+                document.getElementById('quiz-progress').innerText = 'Selesai';
+            }
+        }
+
+        /* ================= MODE PRAKTIK PARAFRASE LOGIC (PENILAIAN AUTOMATIS) ================= */
+        const masterParafraseData = [
+            { original: "Banyak mahasiswa yang suka sekali melakukan copy-paste dari internet gara-gara merasa malas membaca buku dan mengejar tenggat waktu yang sudah sangat mepet.",
+              ideal: "Kebiasaan melakukan salin-tempel dari sumber digital di kalangan mahasiswa kerap dipicu oleh rendahnya minat membaca serta lemahnya pengelolaan waktu tugas.",
+              concepts: [["kebiasaan menyalin sumber", /(salin|tempel|menyalin|copy|jiplak|plagia)/i], ["rendahnya minat/kebiasaan membaca", /(baca|literasi|minat)/i], ["masalah waktu/tenggat", /(waktu|tenggat|jadwal|deadline)/i]] },
+            { original: "Kalau tulisan akademik dibuat tanpa struktur yang jelas, orang yang membaca bakal pusing dan nggak ngerti apa argumen yang mau disampaikan oleh penulisnya.",
+              ideal: "Penyajian karya ilmiah yang kurang terstruktur dapat menyulitkan pembaca dalam memahami alur pemikiran serta argumentasi yang disampaikan penulis.",
+              concepts: [["struktur tulisan", /(struktur|sistematis|terorganisasi|runtut|terarah)/i], ["dampak pada pembaca", /(pembaca|memahami|kebingungan|menyulitkan|sulit)/i], ["argumen/gagasan penulis", /(argumen|gagasan|ide|pemikiran|alur)/i]] },
+            { original: "Mahasiswa sering kesulitan bikin bab 2 karena bingung nyari jurnal yang pas dan gak paham cara nulis kutipan yang bener.",
+              ideal: "Penyusunan bab 2 sering menjadi kendala bagi mahasiswa karena kesulitan menemukan jurnal yang relevan serta belum memahami teknik penulisan kutipan yang tepat.",
+              concepts: [["kesulitan menyusun bab 2", /(bab 2|bab ii|penyusunan|menyusun)/i], ["kesulitan menemukan jurnal", /(jurnal|referensi|literatur|sumber)/i], ["pemahaman kutipan/sitasi", /(kutipan|sitasi|mengutip)/i]] },
+            { original: "Soalnya banyak anak kampus yang males ngerjain revisi, jadi tulisannya gitu-gitu aja dan nggak pernah berkembang.",
+              ideal: "Rendahnya kemauan merevisi pada sebagian mahasiswa menyebabkan kualitas tulisan cenderung stagnan dan tidak berkembang.",
+              concepts: [["revisi", /(revisi|perbaik|menyunting)/i], ["kualitas tulisan", /(kualitas|mutu|tulisan|karya)/i], ["tidak berkembang", /(stagnan|berkembang|meningkat|kemajuan)/i]] },
+            { original: "Kalau kita nggak sering latihan nulis, ya wajar aja kalau kosakata kita terbatas dan susah nyusun kalimat yang enak dibaca.",
+              ideal: "Minimnya latihan menulis secara berkala berdampak pada terbatasnya perbendaharaan kata serta kesulitan menyusun kalimat yang efektif.",
+              concepts: [["kurangnya latihan menulis", /(latihan|berlatih|pembiasaan)/i], ["keterbatasan kosakata", /(kosakata|kosa kata|perbendaharaan|diksi)/i], ["kesulitan menyusun kalimat", /(menyusun|merangkai|kalimat)/i]] }
+        ];
+
+        const informalList = ["suka sekali","copy-paste","gara-gara","malas","males","nyari","mepet","kalau","bakal","pusing","nggak","gak","ngerti","bikin","bener","banget","udah","cuma","emang","gimana","aja","sih","dong","nulis","ngerjain","nyusun","soalnya","gitu-gitu","anak kampus"];
+        const stopWords = new Set(["yang","dari","dengan","dan","untuk","karena","serta","dalam","pada","itu","ini","tidak","atau","sudah","sangat","adalah","dapat","oleh","akan","agar","juga"]);
+        const tok = (t) => t.toLowerCase().replace(/[^a-z0-9\s-]/g, ' ').split(/\s+/).filter(Boolean);
+
+        let pfIdx = 0, pfEvaluated = false, pfLastReport = '';
+
+        function loadParafraseChallenge() {
+            const data = masterParafraseData[pfIdx];
+            document.getElementById('pf-original-text').innerText = `"${data.original}"`;
+            document.getElementById('pf-ideal-text').innerText = `"${data.ideal}"`;
+            document.getElementById('pf-user-input').value = '';
+            document.getElementById('direct-eval-box').classList.add('hidden');
+            document.getElementById('ideal-answer-box').classList.add('hidden');
+            pfEvaluated = false; pfLastReport = '';
+        }
+
+        function nextParafraseChallenge() { pfIdx = (pfIdx + 1) % masterParafraseData.length; loadParafraseChallenge(); }
+
+        function toggleIdealAnswer() {
+            const box = document.getElementById('ideal-answer-box');
+            if (!pfEvaluated && box.classList.contains('hidden')) {
+                alert("Coba tulis dan periksa parafrasemu dulu sebelum melihat kunci jawaban ya!");
+                return;
+            }
+            box.classList.toggle('hidden');
+        }
+
+        function evaluateDirectly() {
+            const userInput = document.getElementById('pf-user-input').value.trim();
+            const data = masterParafraseData[pfIdx];
+            if (!userInput) { alert("Silakan ketikkan draf kalimat parafrase Anda terlebih dahulu!"); return; }
+
+            let score = 100;
+            const mistakes = [];
+            const userTokens = tok(userInput);
+
+            if (userTokens.length < 8) {
+                score -= 30;
+                mistakes.push("Kalimat terlalu pendek (kurang dari 8 kata). Tulisan akademik membutuhkan penjelasan yang utuh.");
+            }
+
+            const foundInformal = informalList.filter(w => new RegExp('(^|[^a-z])' + w + '([^a-z]|$)', 'i').test(userInput));
+            if (foundInformal.length > 0) {
+                score -= Math.min(45, foundInformal.length * 15);
+                mistakes.push(`Terdeteksi kata tidak baku / bahasa lisan: [${foundInformal.join(', ')}]. Gunakan ragam bahasa baku ilmiah.`);
+            }
+
+            const missing = data.concepts.filter(c => !c[1].test(userInput)).map(c => c[0]);
+            if (missing.length > 0) {
+                score -= missing.length * 20;
+                mistakes.push(`Gagasan penting dari teks asli belum tampak: ${missing.join('; ')}. Pastikan makna asli tetap terjaga.`);
+            }
+
+            const origSet = new Set(tok(data.original).filter(w => w.length > 3 && !stopWords.has(w)));
+            const userContent = userTokens.filter(w => w.length > 3 && !stopWords.has(w));
+            const matchCount = userContent.filter(w => origSet.has(w)).length;
+            const overlap = Math.round((matchCount / Math.max(1, userContent.length)) * 100);
+            if (overlap > 60) {
+                score -= 35;
+                mistakes.push(`Kemiripan kata terlalu tinggi (${overlap}%). Ubah struktur kalimat dan gunakan padanan kata baku.`);
+            } else if (overlap > 40) {
+                score -= 15;
+                mistakes.push(`Kemiripan kata cukup tinggi (${overlap}%). Coba susun ulang alur klausa kalimatnya.`);
+            }
+
+            score = Math.max(10, Math.min(100, score));
+            pfEvaluated = true;
+            document.getElementById('direct-eval-box').classList.remove('hidden');
+
+            const badge = document.getElementById('eval-score-badge');
+            badge.innerText = `Nilai Awal: ${score}`;
+            if (score >= 80) {
+                badge.className = "bg-emerald-600 text-white font-bold text-sm px-3 py-1 rounded-lg";
+                confetti({ particleCount: 60, spread: 60, origin: { y: 0.7 } });
+            } else if (score >= 60) {
+                badge.className = "bg-amber-600 text-white font-bold text-sm px-3 py-1 rounded-lg";
+            } else {
+                badge.className = "bg-rose-600 text-white font-bold text-sm px-3 py-1 rounded-lg";
+            }
+
+            document.getElementById('eval-similarity-val').innerText = `${overlap}% (${overlap > 60 ? 'Terlalu mirip dengan teks asli' : overlap > 40 ? 'Cukup mirip' : 'Cukup berbeda dari teks asli'})`;
+            document.getElementById('eval-slang-val').innerText = foundInformal.length === 0 ? "Tidak ditemukan kata non-baku" : `Ditemukan ${foundInformal.length} kata non-baku`;
+
+            const ul = document.getElementById('eval-mistakes-list');
+            ul.innerHTML = '';
+            if (mistakes.length === 0) {
+                ul.innerHTML = '<li class="text-emerald-400 font-semibold">Tidak ditemukan masalah menurut pemeriksaan otomatis. Tetap minta dosen menilai ketepatan maknanya.</li>';
+            } else {
+                mistakes.forEach(m => { const li = document.createElement('li'); li.textContent = m; ul.appendChild(li); });
+            }
+            const note = document.createElement('li');
+            note.className = 'text-slate-500 list-none mt-2';
+            note.textContent = 'Catatan: penilaian ini berbasis pencocokan kata dan bersifat indikatif.';
+            ul.appendChild(note);
+
+            pfLastReport = `Soal ${pfIdx + 1}\nTeks asli: ${data.original}\nJawaban: ${userInput}\nNilai awal: ${score}\nKemiripan: ${overlap}%\nCatatan: ${mistakes.join(' | ') || '-'}`;
+        }
+
+        function copyParafrase() {
+            if (!pfLastReport) { alert("Klik 'Periksa & Nilai Langsung' terlebih dahulu."); return; }
+            const done = () => alert("Hasil disalin ke clipboard.");
+            if (navigator.clipboard) navigator.clipboard.writeText(pfLastReport).then(done, () => prompt("Salin teks ini:", pfLastReport));
+            else prompt("Salin teks ini:", pfLastReport);
+        }
+
+        function applyTheme(light) {
+            document.documentElement.classList.toggle('light', light);
+            document.getElementById('theme-btn').innerHTML = light ? ' Tema Gelap' : ' Tema Terang';
+        }
+        function toggleTheme() {
+            const light = !document.documentElement.classList.contains('light');
+            applyTheme(light);
+            try { localStorage.setItem('akademika_theme', light ? 'light' : 'dark'); } catch (e) {}
+        }
+        try { if (localStorage.getItem('akademika_theme') === 'light') applyTheme(true); } catch (e) {}
+
+        function exportScores() {
+            const rows = ['Nama,Poin'].concat(Object.keys(players).sort((x, y) => players[y] - players[x]).map(n => '"' + n.replace(/"/g, '""') + '",' + players[n]));
+            const blob = new Blob(['\ufeff' + rows.join('\n')], { type: 'text/csv;charset=utf-8' });
+            const a = document.createElement('a');
+            a.href = URL.createObjectURL(blob); a.download = 'skor-akademika-quest.csv';
+            document.body.appendChild(a); a.click(); a.remove();
+        }
+
+        document.addEventListener('keydown', (e) => {
+            if (/^(INPUT|TEXTAREA)$/.test(e.target.tagName) || e.key < '1' || e.key > '4') return;
+            const box = document.getElementById('quiz-options');
+            const btn = box && box.offsetParent !== null ? box.children[Number(e.key) - 1] : null;
+            if (btn) btn.click();
+        });
+
+        /* ===== AKADEMIKA PLUS ===== */
+const Q$ = (id) => document.getElementById(id);
+function toast(m) { const t = Q$('toast'); t.innerHTML = ''; const d = document.createElement('div'); d.className = 'bg-slate-700 text-slate-100 text-sm px-4 py-2 rounded-lg shadow-lg border border-slate-500'; d.textContent = m; t.appendChild(d); setTimeout(() => { if (d.parentNode) d.remove(); }, 3500); }
+window.alert = toast;
+const mk = (tag, cls, txt) => { const e = document.createElement(tag); if (cls) e.className = cls; if (txt != null) e.textContent = txt; return e; };
+
+const TOP = { sitasi: 'Sitasi APA/IEEE', pustaka: 'Daftar Pustaka', efektif: 'Kalimat Efektif', ejaan: 'Ejaan & Tanda Baca', paragraf: 'Struktur Paragraf', abstrak: 'Menulis Abstrak' };
+const TIPS = {
+  sitasi: 'APA: (Nama belakang, tahun); dua penulis dihubungkan &; tiga penulis atau lebih memakai dkk. IEEE: nomor urut dalam kurung siku, mis. [1], sesuai urutan kemunculan.',
+  pustaka: 'APA: urut alfabetis nama belakang. Pola buku: Penulis, A. (Tahun). Judul. Penerbit. IEEE: diurutkan menurut nomor [n] sesuai kemunculan di teks.',
+  efektif: 'Hindari kata mubazir (para ...-..., disebabkan karena, agar supaya, adalah merupakan). Satu kalimat satu gagasan dengan subjek dan predikat jelas.',
+  ejaan: 'Pakai bentuk baku (risiko, bukan resiko). Kata depan di dipisah (di kampus), imbuhan di- disatukan (dikumpulkan). Rincian: a, b, dan c.',
+  paragraf: 'Satu paragraf satu gagasan pokok (kesatuan). Kalimat utama didukung kalimat penjelas, dan antarkalimat padu (koherensi).',
+  abstrak: 'Satu paragraf ringkas yang memuat tujuan, metode, hasil, dan simpulan. Tanpa kutipan panjang dan tanpa ucapan terima kasih.'
+};
+// [topik, tingkat 0-2, soal, opsi, indeks benar, pembahasan]
+const BANK = [
+  ['sitasi', 0, 'Sitasi gaya APA untuk satu penulis bernama Santoso (terbit 2020) di dalam teks ditulis...', ['(Santoso, 2020)', '[Santoso 2020]', '(2020, Santoso)', 'Santoso (hal. 2020)'], 0, 'APA memakai nama belakang dan tahun dalam kurung.'],
+  ['sitasi', 1, 'Gaya IEEE mengutip sumber di dalam teks dengan...', ['Nomor urut dalam kurung siku, misalnya [1]', 'Nama penulis dan tahun dalam kurung', 'Catatan kaki berisi judul buku', 'Nama penerbit di akhir kalimat'], 0, 'IEEE bersifat numerik: [1], [2], sesuai urutan kemunculan.'],
+  ['sitasi', 2, 'Dewi dan Rahman menerbitkan karya pada 2019. Sitasi APA dalam teks yang benar?', ['(Dewi & Rahman, 2019)', '(Dewi, Rahman 2019)', '(Dewi dkk., 2019)', '(Dewi/Rahman: 2019)'], 0, 'Dua penulis dihubungkan & dalam kurung. dkk. dipakai untuk tiga penulis atau lebih.'],
+  ['pustaka', 0, 'Pada daftar pustaka APA, entri disusun...', ['Alfabetis menurut nama belakang penulis pertama', 'Menurut tahun terbit terbaru', 'Sesuai urutan kemunculan di teks', 'Menurut judul terpanjang'], 0, 'APA mengurutkan alfabetis; urutan kemunculan adalah ciri IEEE.'],
+  ['pustaka', 1, 'Entri buku gaya APA yang benar?', ['Pratama, A. (2021). Menulis ilmiah yang efektif. Penerbit Cendekia.', 'Pratama A, 2021, Menulis Ilmiah yang Efektif, Cendekia, Jakarta.', 'Menulis ilmiah yang efektif, Pratama, A., 2021 (Cendekia).', '(2021) A. Pratama: Menulis ilmiah yang efektif - Cendekia'], 0, 'Pola APA: Penulis, inisial. (Tahun). Judul. Penerbit.'],
+  ['pustaka', 2, 'Daftar pustaka IEEE berbeda dari APA terutama pada...', ['Entri diberi nomor [n] dan diurutkan menurut kemunculan', 'Entri tidak memuat judul', 'Entri hanya memuat tahun', 'Entri tanpa nama penulis'], 0, 'IEEE menomori entri sesuai urutan sitasi di teks.'],
+  ['efektif', 0, 'Perbaikan kalimat "Para mahasiswa-mahasiswa mengikuti seminar."', ['Para mahasiswa mengikuti seminar.', 'Para mahasiswa-mahasiswa itu mengikuti seminar.', 'Mahasiswa-mahasiswa para mengikuti seminar.', 'Para-para mahasiswa mengikuti seminar.'], 0, 'Kata para sudah menyatakan jamak, jadi pengulangan mubazir.'],
+  ['efektif', 1, 'Kalimat yang paling efektif?', ['Penelitian ini bertujuan menganalisis pengaruh gaya belajar terhadap prestasi.', 'Penelitian ini mempunyai tujuan yang bertujuan untuk menganalisis pengaruh dari gaya belajar terhadap prestasi.', 'Adapun tujuan daripada penelitian ini adalah bertujuan menganalisis gaya belajar.', 'Tujuan penelitian ini yaitu bertujuan untuk menganalisis gaya belajar.'], 0, 'Tiga opsi lain memuat pengulangan makna (tujuan-bertujuan) dan kata berlebih.'],
+  ['efektif', 2, 'Masalah pada "Hal tersebut disebabkan karena kurangnya latihan."', ['Disebabkan karena mubazir; pilih disebabkan oleh atau karena', 'Kata latihan tidak baku', 'Kurang tanda koma', 'Subjek tidak ada'], 0, 'Disebabkan oleh/karena, bukan keduanya sekaligus.'],
+  ['ejaan', 0, 'Penulisan baku yang benar?', ['risiko', 'resiko', 'risco', 'riziko'], 0, 'Bentuk baku menurut KBBI: risiko.'],
+  ['ejaan', 1, 'Penulisan kata di- yang benar?', ['Data dikumpulkan di perpustakaan kampus.', 'Data di kumpulkan dikampus.', 'Data dikumpulkan dikampus.', 'Data di kumpulkan di perpustakaan.'], 0, 'Di- imbuhan disatukan (dikumpulkan); di kata depan dipisah (di kampus).'],
+  ['ejaan', 2, 'Penggunaan tanda baca yang benar?', ['Peneliti mengumpulkan data melalui wawancara, observasi, dan dokumentasi.', 'Peneliti mengumpulkan data melalui wawancara observasi dan, dokumentasi.', 'Peneliti mengumpulkan data, melalui wawancara, observasi dan dokumentasi.', 'Peneliti, mengumpulkan data melalui wawancara; observasi; dokumentasi.'], 0, 'Rincian dipisah koma, dengan koma sebelum dan pada unsur terakhir.'],
+  ['paragraf', 0, 'Kalimat yang memuat gagasan pokok paragraf disebut...', ['Kalimat utama', 'Kalimat penjelas', 'Kalimat penutup saja', 'Kalimat tanya'], 0, 'Kalimat utama memuat gagasan pokok; kalimat penjelas mendukungnya.'],
+  ['paragraf', 1, 'Urutan paling logis pada paragraf argumentasi?', ['Pernyataan pendapat, alasan atau bukti, simpulan', 'Simpulan, lalu pendapat tanpa alasan', 'Bukti saja tanpa pendapat', 'Contoh berulang-ulang'], 0, 'Argumen yang kuat memuat klaim, dukungan, dan simpulan.'],
+  ['paragraf', 2, 'Paragraf membahas manfaat membaca lalu tiba-tiba membahas harga buku. Prinsip apa yang dilanggar?', ['Kesatuan: satu paragraf satu gagasan pokok', 'Koherensi: penggunaan konjungsi', 'Kelengkapan: jumlah kalimat', 'Kejelasan: ukuran huruf'], 0, 'Pindah ke gagasan lain berarti melanggar kesatuan paragraf.'],
+  ['abstrak', 0, 'Abstrak umumnya...', ['Ringkas, satu paragraf, memuat tujuan, metode, hasil, dan simpulan', 'Lebih dari lima halaman', 'Berisi daftar pustaka lengkap', 'Hanya berisi latar belakang'], 0, 'Abstrak adalah ringkasan padat seluruh penelitian.'],
+  ['abstrak', 1, 'Unsur yang TIDAK lazim ada di abstrak?', ['Kutipan panjang dari buku', 'Tujuan penelitian', 'Metode singkat', 'Hasil utama'], 0, 'Kutipan panjang tidak termasuk isi abstrak.'],
+  ['abstrak', 2, 'Kalimat yang cocok sebagai bagian HASIL pada abstrak?', ['Hasil menunjukkan kelompok eksperimen memperoleh skor lebih tinggi daripada kelompok kontrol.', 'Penulis mengucapkan terima kasih kepada orang tua.', 'Berikut adalah ucapan terima kasih.', 'Lampiran 3 memuat instrumen.'], 0, 'Abstrak memuat temuan utama, bukan ucapan terima kasih atau lampiran.']
+];
+const FE = [
+  'Peneliti {bikin} kuesioner lalu {nyebar} ke seluruh responden.',
+  'Sebagian besar mahasiswa {gak} memahami cara mengutip sumber.',
+  'Hal tersebut {disebabkan} {karena} kurangnya latihan menulis.',
+  'Kemampuan menulis perlu dilatih secara rutin {(Santoso)}.',
+  'Penelitian dilakukan {dikelas} XI selama dua bulan.',
+  'Para {mahasiswa-mahasiswa} mengikuti seminar nasional.'
+];
+const SU = [
+  ['Kerangka makalah', ['Pendahuluan', 'Tinjauan Pustaka', 'Metode', 'Hasil dan Pembahasan', 'Simpulan', 'Daftar Pustaka']],
+  ['Paragraf argumentasi', ['Kebiasaan menyalin tanpa sumber merugikan penulis.', 'Pertama, tindakan itu melanggar etika akademik dan dapat berujung sanksi.', 'Selain itu, penulis kehilangan kesempatan melatih penalaran sendiri.', 'Karena itu, setiap gagasan orang lain harus diparafrase dan disitasi.']],
+  ['Abstrak', ['Penelitian ini bertujuan mengetahui pengaruh latihan menulis terhadap kualitas esai.', 'Metode yang digunakan ialah eksperimen semu dengan 40 mahasiswa.', 'Hasil menunjukkan skor esai kelompok latihan lebih tinggi secara signifikan.', 'Simpulannya, latihan menulis rutin meningkatkan kualitas esai mahasiswa.']]
+];
+const BADGES = { orisinal: ['Penjaga Orisinalitas', '6 jawaban benar pada sitasi/daftar pustaka'], teliti: ['Editor Teliti', 'Temukan semua kesalahan tanpa salah klik'], rapi: ['Penyusun Rapi', 'Susun urutan dengan benar'], kilat: ['Penjawab Kilat', 'Ujian berwaktu dengan skor minimal 80%'], tekun: ['Pantang Menyerah', 'Tuntaskan ulang soal salah dengan benar semua'] };
+const TITLES = ['Pemula', 'Penulis Muda', 'Penyunting', 'Cendekia', 'Maestro'];
+
+let prog = { name: 'Mahasiswa', xp: 0, correct: 0, total: 0, wrong: {}, badges: {}, hist: [], topicOk: {} };
+try { const sv = JSON.parse(localStorage.getItem('akademika_prog')); if (sv && typeof sv === 'object') prog = Object.assign(prog, sv); } catch (e) {}
+const lvl = () => 1 + Math.floor(prog.xp / 100);
+let dbh = null, myUid = null, roomh = null, syncT = null;
+
+function saveProg() {
+  try { localStorage.setItem('akademika_prog', JSON.stringify(prog)); } catch (e) {}
+  renderProf();
+  clearTimeout(syncT);
+  syncT = setTimeout(async () => {
+    try { if (dbh && myUid) await dbh.doc('results/' + myUid).set({ name: prog.name, xp: prog.xp, level: lvl(), correct: prog.correct, total: prog.total, wrong: prog.wrong, badges: prog.badges, hist: prog.hist.slice(-30), topicOk: prog.topicOk, updatedAt: Date.now() }); } catch (e) {}
+    try { if (roomh) await roomh.presence({ name: prog.name, xp: prog.xp, lvl: lvl() }); } catch (e) {}
+  }, 1200);
+}
+function renderProf() {
+  const names = Object.keys(prog.badges).map(k => BADGES[k] && BADGES[k][0]).filter(Boolean).join(', ') || 'belum ada lencana';
+  const t = prog.name + ' | Level ' + lvl() + ' (' + TITLES[Math.min(lvl() - 1, 4)] + ') | ' + prog.xp + ' XP | ' + names;
+  document.querySelectorAll('.akprof').forEach(e => e.textContent = t);
+}
+function addXp(n) { prog.xp += n; saveProg(); }
+function award(id) { if (!prog.badges[id]) { prog.badges[id] = 1; toast('Lencana baru: ' + BADGES[id][0]); try { confetti({ particleCount: 70, spread: 70, origin: { y: 0.7 } }); } catch (e) {} saveProg(); } }
+
+/* Modul */
+Q$('ak-name').value = prog.name;
+Q$('ak-name').onchange = (e) => { prog.name = e.target.value.trim().slice(0, 30) || 'Mahasiswa'; saveProg(); };
+let selTopic = null;
+Object.keys(TOP).forEach(k => {
+  const b = mk('button', 'px-3 py-2 rounded-lg text-sm font-semibold bg-slate-700 hover:bg-slate-600 text-slate-200', TOP[k]);
+  b.onclick = () => { selTopic = k; Q$('ak-tip').textContent = TIPS[k]; Q$('ak-go').classList.remove('hidden'); };
+  Q$('ak-topics').appendChild(b);
+});
+Q$('ak-go').onclick = () => { Q$('ex-topic').value = selTopic; switchTab('ujian'); };
+
+/* Ujian */
+Q$('ex-topic').appendChild(Object.assign(mk('option', '', 'Semua topik'), { value: 'all' }));
+Object.keys(TOP).forEach(k => Q$('ex-topic').appendChild(Object.assign(mk('option', '', TOP[k]), { value: k })));
+let ex = null, exT = null;
+function exStart(topic, level, limit, wrongOnly) {
+  let pool = BANK.map((b, i) => ({ id: 'q' + i, t: b[0], l: b[1], q: b[2], o: b[3], c: b[4], e: b[5] }));
+  if (wrongOnly) pool = pool.filter(p => prog.wrong[p.id]);
+  else { if (topic !== 'all') pool = pool.filter(p => p.t === topic); if (level !== 'all') pool = pool.filter(p => p.l === +level); }
+  if (!pool.length) { toast(wrongOnly ? 'Belum ada soal yang salah. Kerjakan ujian dulu.' : 'Tidak ada soal untuk pilihan ini.'); return; }
+  ex = { qs: shuffleArray([...pool]).slice(0, 10), i: 0, ok: 0, limit: +limit, redo: wrongOnly, topic: wrongOnly ? 'ulang' : topic };
+  Q$('ex-end').classList.add('hidden'); Q$('ex-area').classList.remove('hidden'); exShow();
+}
+function exShow() {
+  const q = ex.qs[ex.i]; ex.locked = false; clearInterval(exT);
+  Q$('ex-prog').textContent = 'Soal ' + (ex.i + 1) + ' dari ' + ex.qs.length + ' | ' + TOP[q.t] + ' | ' + ['Dasar', 'Menengah', 'Lanjut'][q.l];
+  Q$('ex-q').textContent = q.q; Q$('ex-fb').classList.add('hidden'); Q$('ex-next').classList.add('hidden');
+  const box = Q$('ex-opts'); box.innerHTML = ''; ex.btns = [];
+  shuffleArray(q.o.map((t, i) => ({ t, ok: i === q.c }))).forEach((o, i) => {
+    const b = mk('button', 'w-full text-left p-3 rounded-lg bg-slate-700/60 hover:bg-slate-700 border border-slate-600 text-sm', (i + 1) + '. ' + o.t);
+    b.onclick = () => exAnswer(o.ok, b); ex.btns.push({ b, ok: o.ok }); box.appendChild(b);
+  });
+  const bar = Q$('ex-bar'); bar.style.width = '100%';
+  if (ex.limit > 0) { let r = ex.limit; exT = setInterval(() => { r--; bar.style.width = (r / ex.limit * 100) + '%'; if (r <= 0) exAnswer(false, null, true); }, 1000); }
+}
+function exAnswer(ok, btn, timeout) {
+  if (!ex || ex.locked) return; ex.locked = true; clearInterval(exT);
+  const q = ex.qs[ex.i]; prog.total++;
+  ex.btns.forEach(o => { o.b.disabled = true; if (o.ok) o.b.className += ' border-emerald-400 bg-emerald-900/40'; });
+  if (!ok && btn) btn.className += ' border-rose-400 bg-rose-900/40';
+  if (ok) { prog.correct++; ex.ok++; prog.topicOk[q.t] = (prog.topicOk[q.t] || 0) + 1; if (prog.wrong[q.id]) { prog.wrong[q.id]--; if (prog.wrong[q.id] <= 0) delete prog.wrong[q.id]; } }
+  else prog.wrong[q.id] = (prog.wrong[q.id] || 0) + 1;
+  const fb = Q$('ex-fb'); fb.textContent = (ok ? 'Benar. ' : timeout ? 'Waktu habis. ' : 'Kurang tepat. ') + q.e; fb.className = 'mt-3 text-sm ' + (ok ? 'text-emerald-400' : 'text-rose-400');
+  Q$('ex-next').classList.remove('hidden'); saveProg();
+}
+function exNext() { if (!ex || !ex.locked) return; ex.i++; if (ex.i >= ex.qs.length) exEnd(); else exShow(); }
+function exEnd() {
+  clearInterval(exT); const n = ex.qs.length, pct = Math.round(ex.ok / n * 100);
+  addXp(ex.ok * 10); prog.hist.push({ t: Date.now(), topic: ex.topic, ok: ex.ok, n });
+  if ((prog.topicOk.sitasi || 0) + (prog.topicOk.pustaka || 0) >= 6) award('orisinal');
+  if (ex.limit > 0 && n >= 5 && pct >= 80) award('kilat');
+  if (ex.redo && ex.ok === n) award('tekun');
+  if (pct >= 80) { try { confetti({ particleCount: 90, spread: 80 }); } catch (e) {} }
+  Q$('ex-area').classList.add('hidden'); Q$('ex-end').classList.remove('hidden');
+  Q$('ex-sum').textContent = 'Skor akhir: ' + ex.ok + ' dari ' + n + ' (' + pct + '%). +' + (ex.ok * 10) + ' XP';
+  const w = Q$('ex-who'); w.innerHTML = Object.keys(players).map(() => '').join('');
+  Object.keys(players).forEach(k => w.appendChild(Object.assign(mk('option', '', k), { value: k })));
+  const rec = Q$('ex-rec'); rec.disabled = false; rec.textContent = 'Catat ke papan skor';
+  rec.onclick = () => { if (w.value && Object.prototype.hasOwnProperty.call(players, w.value)) { addScore(w.value, ex.ok * 10); rec.disabled = true; rec.textContent = 'Tercatat'; } };
+  ex.qs = ex.qs; ex.done = true;
+}
+Q$('ex-start').onclick = () => exStart(Q$('ex-topic').value, Q$('ex-level').value, Q$('ex-time').value, false);
+Q$('ex-redo').onclick = () => exStart('all', 'all', Q$('ex-time').value, true);
+Q$('ex-next').onclick = exNext;
+Q$('ex-proj').onclick = () => document.documentElement.classList.add('proj');
+document.addEventListener('keydown', (e) => {
+  if (e.target.tagName !== 'BODY' || !ex || Q$('ex-area').classList.contains('hidden')) return;
+  if (e.key >= '1' && e.key <= '4') { const o = ex.btns && ex.btns[+e.key - 1]; if (o && !ex.locked) o.b.click(); }
+  else if (e.key === 'Enter') exNext();
+});
+
+/* Temukan kesalahan */
+let fe = { i: 0, sel: new Set(), checked: false };
+function feRender() {
+  const box = Q$('fe-text'); box.innerHTML = ''; Q$('fe-fb').textContent = ''; fe.sel = new Set(); fe.checked = false;
+  fe.toks = FE[fe.i].split(' ').map(t => ({ txt: t.replace(/[{}]/g, ''), err: t.includes('{') }));
+  fe.toks.forEach((t, k) => {
+    const b = mk('button', 'px-2 py-0.5 rounded bg-slate-700 hover:bg-slate-600 text-slate-100 text-sm', t.txt); t.el = b;
+    b.onclick = () => { if (fe.checked) return; if (fe.sel.has(k)) { fe.sel.delete(k); b.classList.remove('ring-2', 'ring-indigo-400'); } else { fe.sel.add(k); b.classList.add('ring-2', 'ring-indigo-400'); } };
+    box.appendChild(b);
+  });
+}
+Q$('fe-chk').onclick = () => {
+  if (fe.checked) return; fe.checked = true; let miss = 0, bad = 0, hit = 0;
+  fe.toks.forEach((t, k) => { const s = fe.sel.has(k); t.el.classList.remove('ring-2', 'ring-indigo-400'); if (t.err && s) { hit++; t.el.className += ' bg-emerald-700'; } else if (t.err) { miss++; t.el.className += ' bg-amber-700'; } else if (s) { bad++; t.el.className += ' bg-rose-700'; } });
+  const f = Q$('fe-fb');
+  if (!miss && !bad) { f.textContent = 'Sempurna! Semua kesalahan ditemukan. +15 XP'; f.className = 'text-sm mt-2 text-emerald-400'; addXp(15); award('teliti'); }
+  else { f.textContent = 'Ditemukan ' + hit + ', terlewat ' + miss + ' (kuning), salah klik ' + bad + ' (merah).'; f.className = 'text-sm mt-2 text-amber-300'; if (hit) addXp(5); }
+};
+Q$('fe-nxt').onclick = () => { fe.i = (fe.i + 1) % FE.length; feRender(); };
+
+/* Latihan menyusun */
+let su = { i: 0, order: [], checked: false };
+function suRender() {
+  const [title, items] = SU[su.i]; Q$('su-t').textContent = 'Urutkan: ' + title + ' (seret, atau pakai tombol naik/turun)'; Q$('su-fb').textContent = ''; su.checked = false;
+  su.order = shuffleArray(items.map((_, k) => k)); suList();
+}
+function suList(marks) {
+  const ul = Q$('su-list'); ul.innerHTML = ''; const items = SU[su.i][1];
+  su.order.forEach((k, pos) => {
+    const li = mk('li', 'flex items-center gap-2 bg-slate-900 border border-slate-600 rounded-lg p-2 text-sm' + (marks ? (k === pos ? ' border-emerald-400' : ' border-rose-400') : ''));
+    li.draggable = true;
+    li.ondragstart = (e) => { su.drag = pos; e.dataTransfer.effectAllowed = 'move'; try { e.dataTransfer.setData('text/plain', String(pos)); } catch (x) {} };
+    li.ondragover = (e) => e.preventDefault();
+    li.ondrop = (e) => { e.preventDefault(); if (su.drag == null || su.checked) return; const m = su.order.splice(su.drag, 1)[0]; su.order.splice(pos, 0, m); su.drag = null; suList(); };
+    const t = mk('span', 'flex-1', items[k]);
+    const up = mk('button', 'px-2 rounded bg-slate-700', '▲'), dn = mk('button', 'px-2 rounded bg-slate-700', '▼');
+    const mv = (d) => { if (su.checked) return; const j = pos + d; if (j < 0 || j >= su.order.length) return; [su.order[pos], su.order[j]] = [su.order[j], su.order[pos]]; suList(); };
+    up.onclick = () => mv(-1); dn.onclick = () => mv(1);
+    li.append(t, up, dn); ul.appendChild(li);
+  });
+}
+Q$('su-chk').onclick = () => {
+  if (su.checked) return; const ok = su.order.every((k, p) => k === p); su.checked = true; suList(true);
+  const f = Q$('su-fb');
+  if (ok) { f.textContent = 'Urutan benar! +20 XP'; f.className = 'text-sm mt-2 text-emerald-400'; addXp(20); award('rapi'); }
+  else { f.textContent = 'Belum tepat. Garis merah menandai posisi yang keliru; coba set berikutnya atau ulangi.'; f.className = 'text-sm mt-2 text-amber-300'; }
+};
+Q$('su-nxt').onclick = () => { su.i = (su.i + 1) % SU.length; suRender(); };
+
+/* Pemeriksa cepat tanpa AI */
+const MUBAZIR = [[/\badalah merupakan\b/i, 'adalah/merupakan: pilih salah satu'], [/\bagar supaya\b/i, 'agar/supaya: pilih salah satu'], [/\bdemi untuk\b/i, 'demi/untuk: pilih salah satu'], [/\bdisebabkan karena\b/i, 'disebabkan oleh/karena'], [/\bpara \p{L}+-\p{L}+/iu, 'para + kata ulang: jamak ganda'], [/\bseperti misalnya\b/i, 'seperti/misalnya: pilih salah satu'], [/\bnaik ke atas\b|\bturun ke bawah\b|\bmaju ke depan\b/i, 'arah ganda yang berlebih'], [/\bberbagai macam\b/i, 'berbagai/macam: pilih salah satu']];
+function quickCheck(text) {
+  const res = [], sents = text.split(/(?<=[.!?])\s+/).filter(Boolean);
+  sents.forEach(s => { const n = (s.match(/[\p{L}\p{N}-]+/gu) || []).length; if (n > 25) res.push('Kalimat terlalu panjang (' + n + ' kata): "' + s.split(' ').slice(0, 6).join(' ') + '..." Pecah menjadi dua gagasan.'); });
+  MUBAZIR.forEach(([re, m]) => { if (re.test(text)) res.push('Kata mubazir: ' + m); });
+  const dup = text.match(/\b(\p{L}{3,})\s+\1\b/iu); if (dup) res.push('Kata berulang berurutan: "' + dup[0] + '"');
+  const cnt = {}; (text.toLowerCase().match(/\p{L}{6,}/gu) || []).forEach(w => cnt[w] = (cnt[w] || 0) + 1);
+  Object.keys(cnt).filter(w => cnt[w] >= 3).forEach(w => res.push('Kata "' + w + '" muncul ' + cnt[w] + ' kali. Pertimbangkan variasi atau rujukan (ia, hal tersebut).'));
+  return res;
+}
+Q$('r-quick').onclick = () => {
+  const t = Q$('r-teks').value.trim(), out = Q$('r-out'); out.textContent = '';
+  if (!t) { out.textContent = 'Tempel paragrafmu dulu.'; return; }
+  const r = quickCheck(t);
+  if (!r.length) { out.textContent = 'Tidak ada masalah yang terdeteksi pemeriksa cepat (kalimat panjang, kata mubazir, pengulangan).'; return; }
+  r.forEach(x => { const d = mk('div', 'item'); d.appendChild(mk('span', '', x)); out.appendChild(d); });
+};
+
+/* Ringkasan: cetak dan unduh */
+function summaryHTML() {
+  const esc = (x) => String(x).replace(/[&<>"]/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
+  const wr = Object.keys(prog.wrong).map(id => BANK[+id.slice(1)]).filter(Boolean).map(b => '<li>' + esc(b[2]) + '<br><small>Jawaban benar: ' + esc(b[3][b[4]]) + '</small></li>').join('') || '<li>Tidak ada.</li>';
+  const hs = prog.hist.slice(-10).map(h => '<li>' + new Date(h.t).toLocaleDateString('id-ID') + ' - ' + esc(TOP[h.topic] || h.topic) + ': ' + h.ok + '/' + h.n + '</li>').join('') || '<li>Belum ada ujian.</li>';
+  const bd = Object.keys(prog.badges).map(k => esc(BADGES[k][0])).join(', ') || '-';
+  const tp = Object.keys(TOP).map(k => '<li><b>' + esc(TOP[k]) + '</b>: ' + esc(TIPS[k]) + '</li>').join('');
+  return '<h1>Ringkasan Belajar Akademika Quest</h1><p><b>' + esc(prog.name) + '</b> | Level ' + lvl() + ' | ' + prog.xp + ' XP | Benar ' + prog.correct + ' dari ' + prog.total + '</p><p>Lencana: ' + bd + '</p><h2>Riwayat ujian terakhir</h2><ul>' + hs + '</ul><h2>Soal yang perlu diulang</h2><ul>' + wr + '</ul><h2>Ringkasan materi</h2><ul>' + tp + '</ul>';
+}
+function akPrint() { Q$('print-area').innerHTML = summaryHTML(); try { window.print(); } catch (e) { toast('Cetak tidak tersedia. Gunakan Unduh ringkasan.'); } }
+async function akDownload() {
+  try { const d = await claude.use('downloads'); if (!d) throw 0; await d.save({ filename: 'ringkasan-akademika.html', data: '<!DOCTYPE html><meta charset="utf-8"><title>Ringkasan</title><body style="font-family:sans-serif;max-width:720px;margin:20px auto">' + summaryHTML() + '</body>' }); }
+  catch (e) { toast('Unduhan tidak tersedia atau dibatalkan. Coba tombol Cetak ringkasan.'); }
+}
+
+/* Dasbor dosen */
+let dsRows = [];
+async function dsLoad() {
+  const out = Q$('ds-out'); out.textContent = 'Memuat...';
+  try {
+    const snap = await dbh.collection('results').get(); dsRows = snap.docs.map(d => d.data()).filter(Boolean);
+    out.innerHTML = ''; if (!dsRows.length) { out.textContent = 'Belum ada hasil tersimpan.'; return; }
+    dsRows.sort((a, b) => (b.xp || 0) - (a.xp || 0));
+    const tb = mk('table', 'w-full text-left'); const hd = mk('tr'); ['Nama', 'Level', 'XP', 'Benar/Total', 'Terakhir'].forEach(h => hd.appendChild(mk('th', 'pr-4 py-1 text-slate-400', h))); tb.appendChild(hd);
+    dsRows.forEach(r => { const tr = mk('tr'); [r.name, r.level, r.xp, (r.correct || 0) + '/' + (r.total || 0), r.updatedAt ? new Date(r.updatedAt).toLocaleDateString('id-ID') : '-'].forEach(v => tr.appendChild(mk('td', 'pr-4 py-1', String(v == null ? '' : v)))); tb.appendChild(tr); });
+    out.appendChild(tb);
+    const miss = {}; dsRows.forEach(r => Object.keys(r.wrong || {}).forEach(id => miss[id] = (miss[id] || 0) + (+r.wrong[id] || 0)));
+    out.appendChild(mk('div', 'font-bold mt-4 mb-1', 'Soal paling sering salah'));
+    const top = Object.keys(miss).sort((a, b) => miss[b] - miss[a]).slice(0, 5);
+    if (!top.length) out.appendChild(mk('div', 'text-slate-400', 'Belum ada data.'));
+    top.forEach(id => { const b = BANK[+id.slice(1)]; if (b) out.appendChild(mk('div', 'mb-1', miss[id] + 'x - ' + b[2])); });
+    const byDay = {}; dsRows.forEach(r => (r.hist || []).forEach(h => { const k = new Date(h.t).toLocaleDateString('id-ID'); (byDay[k] = byDay[k] || []).push(h.ok / h.n); }));
+    out.appendChild(mk('div', 'font-bold mt-4 mb-1', 'Rata-rata skor ujian per hari'));
+    Object.keys(byDay).forEach(k => out.appendChild(mk('div', '', k + ': ' + Math.round(byDay[k].reduce((a, b) => a + b, 0) / byDay[k].length * 100) + '% (' + byDay[k].length + ' ujian)')));
+  } catch (e) { out.textContent = 'Gagal memuat. Pastikan halaman dibagikan dengan hak kontributor dan kamu pemiliknya.'; }
+}
+Q$('ds-load').onclick = dsLoad;
+Q$('ds-csv').onclick = async () => {
+  if (!dsRows.length) { toast('Muat hasil dulu.'); return; }
+  const q = (v) => '"' + String(v == null ? '' : v).replace(/"/g, '""') + '"';
+  const csv = '\ufeffNama,Level,XP,Benar,Total\n' + dsRows.map(r => [r.name, r.level, r.xp, r.correct, r.total].map(q).join(',')).join('\n');
+  try { const d = await claude.use('downloads'); await d.save({ filename: 'hasil-mahasiswa.csv', data: csv }); } catch (e) { toast('Unduhan tidak tersedia.'); }
+};
+
+/* Infrastruktur: akun, penyimpanan, skor langsung */
+function renderLive(peers) {
+  const ol = Q$('live'); ol.innerHTML = '';
+  [...peers].filter(p => p.presence && p.presence.name).sort((a, b) => (b.presence.xp || 0) - (a.presence.xp || 0)).slice(0, 10)
+    .forEach((p, i) => ol.appendChild(mk('li', p.isMe ? 'text-amber-300' : '', (i + 1) + '. ' + String(p.presence.name).slice(0, 30) + ' - ' + (+p.presence.xp || 0) + ' XP (Level ' + (+p.presence.lvl || 1) + ')' + (p.isMe ? ' (kamu)' : ''))));
+}
+async function akInfra() {
+  try { const u = await claude.use('user'); if (u && await u.isOwner()) Q$('nav-dosen').classList.remove('hidden'); myUid = u ? await u.id() : null; } catch (e) {}
+  try {
+    dbh = await claude.use('db');
+    if (dbh && myUid) { const s = await dbh.doc('results/' + myUid).get(); if (s.exists) { const r = s.data(); if ((r.xp || 0) > prog.xp) { prog = Object.assign(prog, { name: r.name || prog.name, xp: r.xp, correct: r.correct || 0, total: r.total || 0, wrong: r.wrong || {}, badges: r.badges || {}, hist: r.hist || [], topicOk: r.topicOk || {} }); Q$('ak-name').value = prog.name; saveProg(); } } }
+  } catch (e) {}
+  try { roomh = await claude.use('room'); if (roomh) { Q$('live-wrap').classList.remove('hidden'); roomh.onPeers(c => renderLive(c.peers)); roomh.presence({ name: prog.name, xp: prog.xp, lvl: lvl() }); } } catch (e) {}
+}
+renderProf(); feRender(); suRender(); akInfra();
+
+        // Initialize on Load
+        window.onload = function() {
+            renderLeaderboard();
+            resetAdventure();
+            selectStage(1);
+            loadParafraseChallenge();
+        };
+    </script>
+<script>(function(){
+const $ = (id) => document.getElementById(id);
+const TABS = [["rev","Revisi"],["soal","Soal"],["mir","Kemiripan"]];
+TABS.forEach(([k, n], i) => {
+  const b = document.createElement("button"); b.textContent = n; if (!i) b.className = "on";
+  b.onclick = () => { TABS.forEach(([kk], j) => { $("t-" + kk).classList.toggle("hide", kk !== k); nav.children[j].classList.toggle("on", kk === k); }); };
+  $("tabs").appendChild(b);
+});
+const nav = $("tabs");
+
+function el(tag, cls, text) { const e = document.createElement(tag); if (cls) e.className = cls; if (text != null) e.textContent = text; return e; }
+
+async function ask(prompt, out, btn) {
+  out.textContent = "Menganalisis..."; btn.disabled = true;
+  try {
+    const sample = await claude.use("sample");
+    if (!sample) { out.textContent = "Fitur AI tidak tersedia di tampilan ini. Buka halaman lewat claude.ai."; return null; }
+    const r = await sample.json(prompt);
+    out.textContent = ""; return r;
+  } catch (e) {
+    out.textContent = e && e.code === "not_granted" ? "Izin AI belum diberikan." : e && e.code === "rate_limited" ? "Terlalu banyak permintaan. Coba lagi sebentar lagi." : "Gagal memproses. Coba lagi.";
+    return null;
+  } finally { btn.disabled = false; }
+}
+const J = "Balas HANYA dengan JSON valid, tanpa teks lain. Gunakan bahasa Indonesia baku.";
+
+$("r-go").onclick = async () => {
+  const t = $("r-teks").value.trim(), out = $("r-out");
+  if (!t) { out.textContent = "Tempel paragrafmu dulu."; return; }
+  const r = await ask(`Kamu pembimbing penulisan akademik. Beri saran revisi untuk paragraf mahasiswa dengan fokus: ${$("r-asp").value}. ATURAN: jangan menulis ulang paragraf; boleh mengutip fragmen pendek (maks 8 kata) untuk menunjuk masalah; beri arah perbaikan berupa pertanyaan atau petunjuk, bukan kalimat jadi.
+Paragraf: """${t}"""
+${J} Format: {"ringkasan":"...","temuan":[{"aspek":"Struktur|Bahasa|Sitasi","bagian":"fragmen","masalah":"...","petunjuk":"..."}],"kekuatan":["..."]}`, out, $("r-go"));
+  if (!r) return;
+  out.appendChild(el("p", "", r.ringkasan));
+  (r.kekuatan || []).forEach(k => { const d = el("div", "item ok"); d.append(el("b", "", "Sudah baik"), el("span", "", k)); out.appendChild(d); });
+  (r.temuan || []).forEach(f => { const d = el("div", "item"); d.append(el("b", "", f.aspek + (f.bagian ? ": \"" + f.bagian + "\"" : "")), el("span", "", f.masalah), el("br"), el("span", "note", "Petunjuk: " + f.petunjuk)); out.appendChild(d); });
+};
+
+let soalHasil = null;
+$("s-go").onclick = async () => {
+  const t = $("s-bahan").value.trim(), out = $("s-out");
+  if (t.length < 200) { out.textContent = "Bahan terlalu pendek. Tempel minimal beberapa paragraf."; return; }
+  const n = $("s-n").value;
+  const r = await ask(`Buat ${n} soal pilihan ganda berbasis KASUS (bukan hafalan) tingkat ${$("s-lv").value} hanya dari bahan berikut. Setiap soal 4 opsi, semua masuk akal dan panjangnya mirip, hanya satu benar, posisi jawaban benar bervariasi. Jangan memakai fakta di luar bahan.
+Bahan: """${t}"""
+${J} Format: [{"q":"...","options":["","","",""],"correct":0-3,"exp":"penjelasan singkat"}]`, out, $("s-go"));
+  if (!r || !Array.isArray(r)) return;
+  soalHasil = r; $("s-copy").classList.remove("hide");
+  r.forEach((x, i) => {
+    const d = el("div", "item"); d.appendChild(el("b", "", (i + 1) + ". " + x.q));
+    x.options.forEach((o, j) => d.appendChild(el("div", "opt" + (j === x.correct ? " ok" : ""), String.fromCharCode(65 + j) + ". " + o)));
+    d.appendChild(el("span", "note", "Pembahasan: " + x.exp)); out.appendChild(d);
+  });
+};
+$("s-copy").onclick = async () => {
+  const txt = JSON.stringify(soalHasil, null, 1);
+  try { await navigator.clipboard.writeText(txt); $("s-copy").textContent = "Tersalin"; } catch (e) { prompt("Salin teks ini:", txt); }
+};
+
+const words = (s) => (s.match(/[\p{L}\p{N}-]+/gu) || []);
+$("m-go").onclick = () => {
+  const a = $("m-a").value, b = $("m-b").value, out = $("m-out"); out.textContent = "";
+  const wa = words(a), wb = words(b).map(x => x.toLowerCase());
+  if (wa.length < 5 || wb.length < 5) { out.textContent = "Isi kedua teks (minimal 5 kata)."; return; }
+  const K = 4, set = new Set();
+  for (let i = 0; i + K <= wb.length; i++) set.add(wb.slice(i, i + K).join(" "));
+  const hit = new Array(wa.length).fill(false);
+  for (let i = 0; i + K <= wa.length; i++) if (set.has(wa.slice(i, i + K).map(x => x.toLowerCase()).join(" "))) for (let j = i; j < i + K; j++) hit[j] = true;
+  const pct = Math.round(hit.filter(Boolean).length / wa.length * 100);
+  out.appendChild(el("div", "score " + (pct > 30 ? "bad" : "ok"), pct + "% kata ada dalam rangkaian 4 kata yang sama dengan sumber"));
+  out.appendChild(el("p", "note", pct > 30 ? "Kemiripan tinggi: periksa apakah perlu parafrase dan sitasi." : "Kemiripan rendah menurut pencocokan frasa. Ini tidak menjamin tidak ada pengambilan gagasan."));
+  const p = el("p"); let last = 0, re = /[\p{L}\p{N}-]+/gu, m, idx = 0;
+  while ((m = re.exec(a))) { if (hit[idx]) { p.append(document.createTextNode(a.slice(last, m.index))); p.append(el("mark", "", m[0])); last = m.index + m[0].length; } idx++; }
+  p.append(document.createTextNode(a.slice(last))); out.appendChild(p);
+};
+})();</script>
+<script>(function(){
+const DEF=[{n:'Claude',u:'https://claude.ai/new?q={q}'},{n:'ChatGPT',u:'https://chatgpt.com/?q={q}'},{n:'Perplexity',u:'https://www.perplexity.ai/search?q={q}'}];
+const custom=[];
+const V=(id)=>document.getElementById(id).value.trim();
+const P={
+ para:()=>{const a=(typeof masterParafraseData!=='undefined'&&masterParafraseData[pfIdx]||{}).original,b=V('pf-user-input');return a&&b?'Kamu dosen penulisan akademik. Nilai parafrase mahasiswa terhadap teks asli berikut. Periksa: (1) apakah makna asli terjaga tanpa distorsi atau tambahan, (2) apakah struktur kalimat benar-benar berbeda dan bukan sekadar sinonim, (3) apakah bahasanya baku. Beri skor 0-100, lalu jelaskan masalah dan saran perbaikan dalam poin singkat. JANGAN menulis ulang jawaban mahasiswa. Jawab dalam bahasa Indonesia.\n\nTeks asli:\n'+a+'\n\nParafrase mahasiswa:\n'+b:null;},
+ rev:()=>{const t=V('r-teks');return t?'Kamu pembimbing penulisan akademik. Beri saran revisi untuk paragraf mahasiswa dengan fokus: '+document.getElementById('r-asp').value+'. ATURAN: jangan menulis ulang paragraf; kutip fragmen pendek (maksimal 8 kata) untuk menunjuk masalah; beri petunjuk atau pertanyaan pemandu, bukan kalimat jadi. Sebutkan juga satu hal yang sudah baik. Jawab dalam bahasa Indonesia.\n\nParagraf:\n'+t:null;},
+ soal:()=>{const t=V('s-bahan');return t.length>=200?'Buat '+document.getElementById('s-n').value+' soal pilihan ganda berbasis kasus (bukan hafalan) tingkat '+document.getElementById('s-lv').value+' hanya dari bahan berikut. Setiap soal punya 4 opsi yang masuk akal dan panjangnya mirip, satu jawaban benar, posisi jawaban benar bervariasi, serta pembahasan singkat. Jangan memakai fakta di luar bahan. Jawab dalam bahasa Indonesia.\n\nBahan:\n'+t:null;}
+};
+const MSG={para:'Tulis parafrasemu dulu di kotak di atas.',rev:'Tempel paragrafmu dulu.',soal:'Tempel bahan kuliah (minimal beberapa paragraf) dulu.'};
+function go(mode,ai,box){
+ const p=P[mode]();if(!p){toast(MSG[mode]);return;}
+ const ta=box.querySelector('textarea');ta.value=p;ta.style.display='block';
+ try{navigator.clipboard.writeText(p).catch(()=>{});}catch(e){}
+ let url=ai.u;
+ if(url.includes('{q}')){const full=url.replace('{q}',encodeURIComponent(p));url=full.length>1900?url.split('?')[0]:full;}
+ const a=document.createElement('a');a.href=url;a.target='_blank';a.rel='noopener noreferrer';document.body.appendChild(a);a.click();a.remove();
+ toast('Prompt disalin. Jika kolom chat kosong, tempel dengan Ctrl+V atau salin dari kotak di bawah.');
+}
+function render(){
+ document.querySelectorAll('.ailinks').forEach(box=>{
+  box.innerHTML='';const mode=box.dataset.mode,inAi=!!box.closest('#tab-ai');
+  const lb=document.createElement('p');lb.className=inAi?'note':'text-xs text-slate-400 mt-3';
+  lb.textContent=mode==='para'?'Minta AI menilai parafrasemu. Teks asli dan jawabanmu terisi otomatis di prompt:':'Buka langsung di AI (prompt terisi dan disalin otomatis):';box.appendChild(lb);
+  const row=document.createElement('div');row.className=inAi?'row':'flex flex-wrap gap-2 mt-2';
+  DEF.concat(custom).forEach(ai=>{const b=document.createElement('button');b.className=inAi?'btn':'px-4 py-2.5 bg-indigo-600 hover:bg-indigo-500 text-white text-sm font-semibold rounded-lg transition';b.textContent=ai.n;b.onclick=()=>go(mode,ai,box);row.appendChild(b);});
+  box.appendChild(row);
+  const ta=document.createElement('textarea');ta.readOnly=true;ta.style.display='none';ta.style.minHeight='90px';ta.style.marginTop='8px';
+  if(!inAi)ta.className='w-full bg-slate-900 border border-slate-700 rounded-lg p-2 text-xs text-slate-300';
+  ta.setAttribute('aria-label','Prompt siap salin');box.appendChild(ta);
+ });
+}
+render();
+})();</script>
+</body>
+</html>
